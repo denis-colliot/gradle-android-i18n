@@ -1,0 +1,66 @@
+buildscript {
+    ext.versions = [
+            java : '1.8',
+            junit: '4.12'
+    ]
+}
+
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.2.51'
+    id 'com.gradle.plugin-publish' version '0.9.10'
+}
+
+group 'com.github.gradle'
+version '0.1'
+
+repositories {
+    maven {
+        url "https://ulice.info.ratp/repo/jcenter"
+        credentials {
+            username uliceArtifactoryUsername
+            password uliceArtifactoryPassword
+        }
+    }
+}
+
+dependencies {
+    testImplementation gradleTestKit()
+    testImplementation "junit:junit:${versions.junit}"
+
+    implementation gradleApi()
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = versions.java
+}
+compileTestKotlin {
+    kotlinOptions.jvmTarget = versions.java
+}
+
+test {
+    reports {
+        junitXml.enabled = true
+        html.enabled = true
+    }
+}
+
+// -----------------------------------------------------------------------------------------
+//
+// Publish configuration.
+//
+// -----------------------------------------------------------------------------------------
+
+pluginBundle {
+    website = 'https://github.com/denis-colliot/gradle-android-i18n'
+    vcsUrl = 'https://github.com/denis-colliot/gradle-android-i18n'
+    description = 'Gradle plugin for android generating localized resources from an external translations source.'
+    tags = ['android', 'i18n', 'localized', 'translations']
+
+    plugins {
+        androidI18nPlugin {
+            id = 'com.github.gradle.android-i18n'
+            displayName = 'Gradle android i18n plugin'
+        }
+    }
+}
