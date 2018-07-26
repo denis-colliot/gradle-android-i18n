@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <plurals name="plural_a">
+        <item quantity="other">Other of A</item>
+    </plurals>
+    <plurals name="plural_b">
+        <item quantity="other">Other of B</item>
+    </plurals>
+
+    <string name="string_1">Lorem ipsum dolor sit amet</string>
+    <string name="string_2">Mauris molestie mi felis</string>
+    <string name="string_3">Donec cursus nisi eu semper</string>
+
+</resources>

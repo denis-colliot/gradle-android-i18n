@@ -1,7 +1,11 @@
 buildscript {
     ext.versions = [
-            java : '1.8',
-            junit: '4.12'
+            java      : '1.8',
+            junit     : '4.12',
+            koin      : '0.9.3',
+            jacksonCsv: '2.8.8',
+            jacksonXml: '2.9.6',
+            poi       : '3.17',
     ]
 }
 
@@ -26,9 +30,15 @@ repositories {
 dependencies {
     testImplementation gradleTestKit()
     testImplementation "junit:junit:${versions.junit}"
+    testImplementation "org.koin:koin-test:${versions.koin}"
 
     implementation gradleApi()
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation "org.koin:koin-core:${versions.koin}"
+    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-csv:${versions.jacksonCsv}"
+    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:${versions.jacksonXml}"
+    implementation "com.fasterxml.jackson.module:jackson-module-kotlin:${versions.jacksonXml}"
+    implementation "org.apache.poi:poi-excelant:${versions.poi}"
 }
 
 compileKotlin {

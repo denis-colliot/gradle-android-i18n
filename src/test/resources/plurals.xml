@@ -1,0 +1,5 @@
+<plurals name="number_of_songs">
+    <item quantity="zero">0 songs</item>
+    <item quantity="one">1 song</item>
+    <item quantity="two">2 songs</item>
+</plurals>
