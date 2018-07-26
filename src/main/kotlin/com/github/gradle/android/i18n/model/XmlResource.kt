@@ -4,15 +4,20 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText
 
 // Cannot be a `data class` because fields are optional.
-class XmlResource {
+class XmlResource() {
 
     @JacksonXmlProperty(isAttribute = true)
-    val name: String? = null
+    var name: String? = null
 
     @JacksonXmlProperty(isAttribute = true)
-    val quantity: String? = null
+    var quantity: String? = null
 
     @JacksonXmlText
-    val text: String? = null
+    var text: String? = null
 
+    constructor(name: String? = null, quantity: String? = null, text: String? = null) : this() {
+        this.name = name
+        this.quantity = quantity
+        this.text = text
+    }
 }

@@ -1,30 +1,22 @@
 package testutil
 
-import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.github.gradle.android.i18n.di.AppModule
-import org.junit.Before
-import org.koin.standalone.StandAloneContext.startKoin
-import org.koin.standalone.inject
-import org.koin.test.AutoCloseKoinTest
+import com.github.gradle.android.i18n.conf.Configuration
 import java.io.BufferedReader
 import java.io.InputStreamReader
+import java.net.URL
 
-abstract class AbstractUnitTest : AutoCloseKoinTest() {
+abstract class AbstractUnitTest {
 
-    protected val mapper: XmlMapper by inject()
+    protected val mapper = Configuration.xmlMapper()
 
-    protected inline fun <reified T : Any> readFile(file: String): T {
-        val inputStream = this::class.java.getResourceAsStream(file)
-                ?: error("Failed to load resource: $file")
-
-        BufferedReader(InputStreamReader(inputStream)).use { reader ->
-            return mapper.readValue(reader)
-        }
+    protected fun resource(file: String): URL {
+        return javaClass.getResource(file) ?: error("Failed to load resource '$file'")
     }
 
-    @Before
-    fun before() {
-        startKoin(listOf(AppModule.applicationModule))
+    protected inline fun <reified T : Any> readFile(file: String): T {
+        BufferedReader(InputStreamReader(resource(file).openStream())).use { reader ->
+            return mapper.readValue(reader)
+        }
     }
 }

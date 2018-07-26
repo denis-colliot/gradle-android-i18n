@@ -1,4 +1,4 @@
-package com.github.gradle.android.i18n.util
+package com.github.gradle.android.i18n.conf
 
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.dataformat.xml.util.DefaultXmlPrettyPrinter
@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory
  *
  * [com.fasterxml.jackson.dataformat.xml.util.DefaultXmlPrettyPrinter.Lf2SpacesIndenter]
  */
-class Lf4SpacesIndenter : DefaultXmlPrettyPrinter.Indenter {
+internal class Lf4SpacesIndenter : DefaultXmlPrettyPrinter.Indenter {
 
     companion object {
         private val LOGGER: Logger = LoggerFactory.getLogger(Lf4SpacesIndenter::class.java)

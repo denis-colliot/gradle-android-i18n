@@ -9,9 +9,9 @@ data class StringResources(
 
         @JacksonXmlProperty(localName = "string")
         @JacksonXmlElementWrapper(useWrapping = false)
-        val strings: List<XmlResource>,
+        val strings: MutableList<XmlResource> = mutableListOf(),
 
         @JacksonXmlProperty(localName = "plurals")
         @JacksonXmlElementWrapper(useWrapping = false)
-        val plurals: List<XmlResources>
+        val plurals: MutableList<XmlResources> = mutableListOf()
 )

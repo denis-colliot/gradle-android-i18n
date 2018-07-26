@@ -6,11 +6,12 @@ import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import testutil.AbstractUnitTest
 
 /**
  * Plugin tests.
  */
-class AndroidI18nPluginTest {
+class AndroidI18nPluginTest : AbstractUnitTest() {
 
     private lateinit var project: Project
 
@@ -20,10 +21,14 @@ class AndroidI18nPluginTest {
     }
 
     @Test
-    fun `should initialize plugin`() {
+    fun `should initialize plugin extension & tasks`() {
         project.pluginManager.apply("com.github.gradle.android-i18n")
 
-        assertTrue(project.extensions.getByName("i18n") is AndroidI18nPluginExtension)
-        assertNotNull(project.tasks.getByName("i18n"))
+        val extension = project.extensions.getByName("androidI18n")
+        assertTrue(extension is AndroidI18nPluginExtension)
+        assertNotNull((extension as AndroidI18nPluginExtension).project)
+
+        assertNotNull(project.tasks.getByName("androidI18nImport"))
+        assertNotNull(project.tasks.getByName("androidI18nExport"))
     }
 }

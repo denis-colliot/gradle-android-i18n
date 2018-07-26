@@ -10,5 +10,5 @@ data class XmlResources(
 
         @JacksonXmlProperty(localName = "item")
         @JacksonXmlElementWrapper(useWrapping = false)
-        val items: List<XmlResource>
+        val items: MutableList<XmlResource>
 )

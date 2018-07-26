@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources>
+    <string name="key">en</string>
+    <string name="trad.key.key_1">Application text written in english n°1</string>
+    <string name="trad.key.key_2">Application text written in english n°2</string>
+    <string name="trad.key.key_3">Application text with one parameter %s</string>
+    <string name="trad.key.key_4">Application text with two parameters %1$s et %2$s</string>
+    <string name="trad.key.key_5">Text with internal "quotes"</string>
+    <plurals name="trad.key.key_6">
+        <item quantity="one">1 apple</item>
+        <item quantity="two">2 apples</item>
+        <item quantity="many">Many apples</item>
+    </plurals>
+</resources>
