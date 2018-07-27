@@ -38,13 +38,13 @@ abstract class XmlGenerator(private val project: Project) {
                     "value '" + translation + "'")
         }
 
-        key?.let {
-            if (XML_KEY_ILLEGAL_CHARS.toRegex().containsMatchIn(key)) {
-                throw IllegalArgumentException("Invalid translation key '$key'")
+        key?.trim()?.let { cleanKey ->
+            if (XML_KEY_ILLEGAL_CHARS.toRegex().containsMatchIn(cleanKey)) {
+                throw IllegalArgumentException("Invalid translation key '$cleanKey'")
             }
 
             translation?.let {
-                addNullSafe(stringResources, key, translation)
+                addNullSafe(stringResources, cleanKey, translation)
             }
         }
     }

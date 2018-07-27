@@ -2,20 +2,16 @@ package com.github.gradle.android.i18n
 
 import com.github.gradle.android.i18n.generator.Xls2XmlGenerator
 import jcifs.smb.SmbFile
-import jcifs.smb.SmbFileInputStream
-import org.gradle.api.Project
 import java.io.File
-import java.io.FileInputStream
 import java.io.InputStream
-import java.net.URI
 
-open class AndroidI18nPluginExtension(val project: Project) {
+open class AndroidI18nPluginExtension(private val xls2XmlGenerator: Xls2XmlGenerator) {
 
     var sourceFile: String = ""
 
     fun importI18nResources() {
         if (sourceFile.endsWith(".xls")) {
-            Xls2XmlGenerator(project).generate(sourceInputStream())
+            xls2XmlGenerator.generate(sourceInputStream())
         } else {
             throw UnsupportedOperationException("Source file '$sourceFile' is not supported")
         }
@@ -27,17 +23,13 @@ open class AndroidI18nPluginExtension(val project: Project) {
 
     private fun sourceInputStream(): InputStream {
         return when {
-            sourceFile.startsWith("smb:/") ->
+            sourceFile.startsWith("smb://") ->
                 // Samba URI.
-                SmbFileInputStream(SmbFile(sourceFile))
-
-            sourceFile.startsWith("\\\\") ->
-                // Windows network URI.
-                FileInputStream(File(URI("file:$sourceFile")))
+                SmbFile(sourceFile).inputStream
 
             else ->
                 // Default case.
-                FileInputStream(File(sourceFile))
+                File(sourceFile).inputStream()
         }
     }
 }

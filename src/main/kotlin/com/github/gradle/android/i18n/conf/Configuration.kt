@@ -5,8 +5,15 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator
 import com.fasterxml.jackson.dataformat.xml.util.DefaultXmlPrettyPrinter
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import jcifs.Config
 
 object Configuration {
+
+    init {
+        Config.setProperty("jcifs.util.loglevel", "1")
+        Config.setProperty("jcifs.smb.client.responseTimeout", "5000")
+        Config.setProperty("jcifs.smb.client.dfs.disabled", "true")
+    }
 
     fun xmlMapper(): XmlMapper {
         return XmlMapper().apply {

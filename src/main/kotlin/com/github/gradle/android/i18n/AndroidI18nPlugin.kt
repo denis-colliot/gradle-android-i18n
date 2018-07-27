@@ -1,5 +1,6 @@
 package com.github.gradle.android.i18n
 
+import com.github.gradle.android.i18n.generator.Xls2XmlGenerator
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -11,7 +12,9 @@ class AndroidI18nPlugin : Plugin<Project> {
     override fun apply(project: Project?) {
         project?.let {
 
-            val extension = project.extensions.create("androidI18n", AndroidI18nPluginExtension::class.java, project)
+            val extension = project.extensions.create("androidI18n",
+                    AndroidI18nPluginExtension::class.java,
+                    Xls2XmlGenerator(project))
 
             project.tasks.let {
                 it.create("androidI18nImport").apply {

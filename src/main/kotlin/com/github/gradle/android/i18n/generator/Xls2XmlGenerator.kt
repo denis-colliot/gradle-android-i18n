@@ -38,10 +38,11 @@ class Xls2XmlGenerator(project: Project) : XmlGenerator(project) {
     }
 
     private fun readInput(inputStream: InputStream, consumer: (Row) -> Unit) {
-
-        val wb = WorkbookFactory.create(inputStream)
-
-        // We assume there is only one sheet
-        wb.getSheetAt(0).forEach(consumer)
+        inputStream.use {
+            WorkbookFactory.create(it).use {
+                // We assume there is only one sheet.
+                it.getSheetAt(0).forEach(consumer)
+            }
+        }
     }
 }

@@ -1,9 +1,12 @@
 package com.github.gradle.android.i18n.generator
 
+import jcifs.smb.SmbFile
+import jcifs.smb.SmbFileInputStream
 import org.apache.tools.ant.util.FileUtils
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Assert.assertTrue
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
@@ -45,12 +48,38 @@ class Xls2XmlGeneratorTest : AbstractUnitTest() {
     }
 
     @Test
-    fun `should properly generate XML resources from XLS source`() {
-
-        val sourceFile = File(resource("/input.xls").toURI()).absolutePath
-        xls2XmlGenerator.generate(File(sourceFile).inputStream())
+    fun `should properly generate XML resources from local XLS source`() {
+        xls2XmlGenerator.generate(File(resource("/input.xls").toURI()).inputStream())
 
         assertTrue(fileUtils.contentEquals(actualFrFile, expectedFrFile, true))
         assertTrue(fileUtils.contentEquals(actualEnFile, expectedEnFile, true))
+    }
+
+    @Test
+    @Ignore
+    fun `should properly generate XML resources from remote samba XLS source`() {
+        val sourceFile = "smb://RATP;<login>:<pwd>@urbanbox.info.ratp/sit-cps-ivs/Domaine Agile/" +
+                "Appli RATP/Android/Application RATP V3/Ressources/Traductions/i18n.xls"
+        xls2XmlGenerator.generate(SmbFileInputStream(SmbFile(sourceFile)))
+
+        assertTrue(expectedFrFile.exists())
+        assertTrue(expectedFrFile.length() > 0)
+
+        assertTrue(expectedEnFile.exists())
+        assertTrue(expectedEnFile.length() > 0)
+    }
+
+    @Test
+    @Ignore
+    fun `should properly generate XML resources from remote windows XLS source`() {
+        val sourceFile = "\\\\urbanbox.info.ratp\\sit-cps-ivs\\Domaine Agile\\Appli RATP\\Android\\" +
+                "Application RATP V3\\Ressources\\Traductions\\i18n.xls"
+        xls2XmlGenerator.generate(File(sourceFile).inputStream())
+
+        assertTrue(expectedFrFile.exists())
+        assertTrue(expectedFrFile.length() > 0)
+
+        assertTrue(expectedEnFile.exists())
+        assertTrue(expectedEnFile.length() > 0)
     }
 }
