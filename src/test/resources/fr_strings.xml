@@ -1,6 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
-    <string name="key">fr</string>
     <string name="trad.key.key_1">Texte de l\'application écrit en français n°1</string>
     <string name="trad.key.key_2">Texte de l\'application écrit en français n°2</string>
     <string name="trad.key.key_3">Texte de l\'application avec un paramètre %s</string>

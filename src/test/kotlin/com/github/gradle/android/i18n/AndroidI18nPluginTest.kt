@@ -8,11 +8,9 @@ import com.nhaarman.mockito_kotlin.verify
 import org.apache.tools.ant.util.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
-import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertTrue
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Ignore
-import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import testutil.AbstractUnitTest
@@ -26,8 +24,8 @@ import java.nio.file.Paths
  */
 class AndroidI18nPluginTest : AbstractUnitTest() {
 
-    @Rule
-    @JvmField
+    //@Rule
+    //@JvmField
     val folder = TemporaryFolder()
 
     private val fileUtils = FileUtils.getFileUtils()
@@ -42,6 +40,7 @@ class AndroidI18nPluginTest : AbstractUnitTest() {
 
     @Before
     fun `set up test`() {
+        folder.create()
         project = ProjectBuilder.builder().withProjectDir(folder.root).build()
         project.pluginManager.apply("com.github.gradle.android-i18n")
 
@@ -69,7 +68,9 @@ class AndroidI18nPluginTest : AbstractUnitTest() {
             it.importI18nResources()
         }
 
-        verify(xls2XmlGenerator, times(1)).generate(check { assertTrue(it is FileInputStream) })
+        verify(xls2XmlGenerator, times(1)).generate(
+                check { assertTrue(it is FileInputStream) },
+                check { assertEquals("en", it) })
     }
 
     @Test(expected = FileNotFoundException::class)

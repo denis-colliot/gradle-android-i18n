@@ -21,6 +21,11 @@ open class AndroidI18nPluginExtension(private val xls2XmlGenerator: Xls2XmlGener
     var sourceFile: String = ""
 
     /**
+     * Default android locale.
+     */
+    var defaultLocale: String = "en"
+
+    /**
      * Imports
      * @throws FileNotFoundException If the [sourceFile] does not exist.
      * @throws UnsupportedOperationException If the [sourceFile] type is not supported.
@@ -29,7 +34,7 @@ open class AndroidI18nPluginExtension(private val xls2XmlGenerator: Xls2XmlGener
     fun importI18nResources() {
         sourceInputStream().use { inputStream ->
             if (sourceFile.endsWith(".xls")) {
-                xls2XmlGenerator.generate(inputStream)
+                xls2XmlGenerator.generate(inputStream, defaultLocale)
             } else {
                 throw UnsupportedOperationException("Source file '$sourceFile' is not supported")
             }

@@ -12,29 +12,49 @@ class Xls2XmlGenerator(project: Project) : XmlGenerator(project) {
 
     private val logger = LoggerFactory.getLogger(Xls2XmlGenerator::class.java)
 
-    override fun generate(inputStream: InputStream) {
+    override fun generate(inputStream: InputStream, defaultLocale: String) {
 
         val keys = HashSet<String>()
-        val frStringResources = StringResources()
-        val enStringResources = StringResources()
+        val stringResources = mutableMapOf<Int, StringResources>()
 
         readInput(inputStream) { row ->
-            val key = row.getCell(0).stringCellValue
-            val french = row.getCell(1).stringCellValue
-            val english = row.getCell(2).stringCellValue
+            if (row.rowNum == 0) {
+                row.cellIterator()
+                        .asSequence()
+                        .filter { it.columnIndex > 0 }
+                        .filter { it.stringCellValue.isNotBlank() }
+                        .forEach {
+                            val locale = when (defaultLocale) {
+                                it.stringCellValue -> null
+                                else -> it.stringCellValue
+                            }
+                            stringResources[it.columnIndex] = StringResources(locale)
+                        }
+            } else {
+                val key = row.getCell(0).stringCellValue
 
-            if (!keys.add(key)) {
-                throw IllegalArgumentException("Duplicated key '$key'")
+                if (!keys.add(key)) {
+                    throw IllegalArgumentException("Duplicated key '$key'")
+                }
+
+                row.cellIterator()
+                        .asSequence()
+                        .filter { it.columnIndex > 0 }
+                        .forEach { cell ->
+                            stringResources[cell.columnIndex]?.let {
+                                add(it, key, cell.stringCellValue)
+                            }
+                        }
             }
-            add(frStringResources, key, french)
-            add(enStringResources, key, english)
         }
 
-        logger.debug("French translations: {}", frStringResources)
-        logger.debug("English translations: {}", enStringResources)
-
-        writeOutput(androidStringsResFile("fr"), frStringResources)
-        writeOutput(androidStringsResFile(), enStringResources)
+        stringResources
+                .values
+                .forEach { resources ->
+                    val locale = resources.locale
+                    logger.debug("Translations for locale $locale: $resources")
+                    writeOutput(androidStringsResFile(locale), resources)
+                }
     }
 
     private fun readInput(inputStream: InputStream, consumer: (Row) -> Unit) {

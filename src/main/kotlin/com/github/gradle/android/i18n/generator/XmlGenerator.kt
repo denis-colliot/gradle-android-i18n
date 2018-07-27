@@ -25,7 +25,7 @@ abstract class XmlGenerator(private val project: Project) {
     /**
      * Generates `xml` android resources from given source input stream.
      */
-    abstract fun generate(inputStream: InputStream)
+    abstract fun generate(inputStream: InputStream, defaultLocale: String)
 
     /**
      * Adds the given translation to the current XML resource.
@@ -105,10 +105,10 @@ abstract class XmlGenerator(private val project: Project) {
         mapper.writeValue(outputFile, translations)
     }
 
-    protected fun androidStringsResFile(locale: String = ""): File {
-        val localeSuffix = if (locale.isNotBlank()) {
+    protected fun androidStringsResFile(locale: String?): File {
+        val localeSuffix = locale?.let {
             "-${locale.trim()}"
-        } else {
+        } ?: run {
             ""
         }
         val projectDir = project.projectDir.absolutePath
