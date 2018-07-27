@@ -14,12 +14,18 @@ import com.github.gradle.android.i18n.model.XmlResources
 import org.gradle.api.Project
 import org.slf4j.LoggerFactory
 import java.io.File
+import java.io.InputStream
 import java.nio.file.Paths
 
 abstract class XmlGenerator(private val project: Project) {
 
     private val mapper = Configuration.xmlMapper()
     private val logger = LoggerFactory.getLogger(XmlGenerator::class.java)
+
+    /**
+     * Generates `xml` android resources from given source input stream.
+     */
+    abstract fun generate(inputStream: InputStream)
 
     /**
      * Adds the given translation to the current XML resource.
@@ -30,6 +36,7 @@ abstract class XmlGenerator(private val project: Project) {
      *
      * @throws IllegalArgumentException If one of the arguments is empty, or if `key` contains space(s).
      */
+    @Throws(IllegalArgumentException::class)
     protected fun add(stringResources: StringResources, key: String?, translation: String?) {
 
         // Validating arguments.

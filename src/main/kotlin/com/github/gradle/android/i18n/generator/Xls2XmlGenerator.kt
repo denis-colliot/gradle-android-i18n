@@ -12,7 +12,7 @@ class Xls2XmlGenerator(project: Project) : XmlGenerator(project) {
 
     private val logger = LoggerFactory.getLogger(Xls2XmlGenerator::class.java)
 
-    fun generate(inputStream: InputStream) {
+    override fun generate(inputStream: InputStream) {
 
         val keys = HashSet<String>()
         val frStringResources = StringResources()
@@ -38,11 +38,9 @@ class Xls2XmlGenerator(project: Project) : XmlGenerator(project) {
     }
 
     private fun readInput(inputStream: InputStream, consumer: (Row) -> Unit) {
-        inputStream.use {
-            WorkbookFactory.create(it).use {
-                // We assume there is only one sheet.
-                it.getSheetAt(0).forEach(consumer)
-            }
+        WorkbookFactory.create(inputStream).use {
+            // We assume there is only one sheet.
+            it.getSheetAt(0).forEach(consumer)
         }
     }
 }
