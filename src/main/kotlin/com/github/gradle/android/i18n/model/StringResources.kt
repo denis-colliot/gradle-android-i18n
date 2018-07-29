@@ -15,13 +15,13 @@ data class StringResources(
          * Resource locale (`en`, `it`, `ja`, `b+es+ES`, etc.).
          */
         @JsonIgnore
-        val locale: String = "",
+        var locale: String = "",
 
         /**
          * Is this resource locale the default locale?
          */
         @JsonIgnore
-        val defaultLocale: Boolean = false,
+        var defaultLocale: Boolean = false,
 
         /**
          * The resource `string` items.
