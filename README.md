@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/denis-colliot/gradle-android-i18n.svg?style=svg)](https://circleci.com/gh/denis-colliot/gradle-android-i18n)
+
 # Introduction
 
 The **androidI18n** gradle plugin automaticallly generates `strings.xml`
