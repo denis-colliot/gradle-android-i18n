@@ -7,15 +7,27 @@ import com.fasterxml.jackson.dataformat.xml.util.DefaultXmlPrettyPrinter
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import jcifs.Config
 
+/**
+ * Project global configuration.
+ */
 object Configuration {
 
+    /**
+     * [XmlMapper] singleton.
+     */
+    val xmlMapper: XmlMapper
+
     init {
+        // XmlMapper initialization.
+        xmlMapper = xmlMapper()
+
+        // JCifs configuration.
         Config.setProperty("jcifs.util.loglevel", "1")
         Config.setProperty("jcifs.smb.client.responseTimeout", "5000")
         Config.setProperty("jcifs.smb.client.dfs.disabled", "true")
     }
 
-    fun xmlMapper(): XmlMapper {
+    private fun xmlMapper(): XmlMapper {
         return XmlMapper().apply {
             registerKotlinModule()
 

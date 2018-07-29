@@ -26,7 +26,8 @@ open class AndroidI18nPluginExtension(private val xls2XmlGenerator: Xls2XmlGener
     var defaultLocale: String = "en"
 
     /**
-     * Imports
+     * Imports the i18n translation resources from the configured [sourceFile].
+     *
      * @throws FileNotFoundException If the [sourceFile] does not exist.
      * @throws UnsupportedOperationException If the [sourceFile] type is not supported.
      */
@@ -41,6 +42,9 @@ open class AndroidI18nPluginExtension(private val xls2XmlGenerator: Xls2XmlGener
         }
     }
 
+    /**
+     * Exports the project android i18n resources to an output file.
+     */
     fun exportI18nResources() {
         TODO()
     }

@@ -1,6 +1,6 @@
 package com.github.gradle.android.i18n.generator
 
-import com.github.gradle.android.i18n.conf.Configuration
+import com.github.gradle.android.i18n.conf.Configuration.xmlMapper
 import com.github.gradle.android.i18n.generator.GeneratorHelper.ARG_PLACEHOLDER
 import com.github.gradle.android.i18n.generator.GeneratorHelper.QUANTITY_SEPARATOR
 import com.github.gradle.android.i18n.generator.GeneratorHelper.SINGLE_QUOTE
@@ -12,29 +12,31 @@ import com.github.gradle.android.i18n.model.StringResources
 import com.github.gradle.android.i18n.model.XmlResource
 import com.github.gradle.android.i18n.model.XmlResources
 import org.gradle.api.Project
-import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.InputStream
 import java.nio.file.Paths
 
+/**
+ * Android `xml` string resources generator.
+ */
 abstract class XmlGenerator(private val project: Project) {
 
-    private val mapper = Configuration.xmlMapper()
-    private val logger = LoggerFactory.getLogger(XmlGenerator::class.java)
-
     /**
-     * Generates `xml` android resources from given source input stream.
+     * Generates the `xml` android string resources file from given source input stream.
      */
     abstract fun generate(inputStream: InputStream, defaultLocale: String)
 
     /**
-     * Adds the given translation to the current XML resource.
+     * Adds the given translation to the given string resources.
      *
      * This methods automatically alters the given `translation` if necessary:
      * - escapes `translation`'s quotes (`l'avion -> l\'avion`).
      * - replaces `translation`'s parameters characters (`# -> %1$s`).
      *
-     * @throws IllegalArgumentException If one of the arguments is empty, or if `key` contains space(s).
+     * @param stringResources The resources.
+     * @param key The key.
+     * @param translation The corresponding translation value.
+     * @throws IllegalArgumentException If one of the arguments is empty, or if `key` contains illegal char(s).
      */
     @Throws(IllegalArgumentException::class)
     protected fun add(stringResources: StringResources, key: String?, translation: String?) {
@@ -73,10 +75,7 @@ abstract class XmlGenerator(private val project: Project) {
         }
 
         if (key.contains(QUANTITY_SEPARATOR)) {
-            val split = key.split(QUANTITY_SEPARATOR.toRegex())
-            val realKey = split[0]
-            val quantity = split[1]
-
+            val (realKey, quantity) = key.split(QUANTITY_SEPARATOR.toRegex())
             val index = stringResources.plurals.indexOfFirst { it.name == realKey }
 
             val xmlListResource: XmlResources
@@ -94,17 +93,20 @@ abstract class XmlGenerator(private val project: Project) {
         }
     }
 
+    /**
+     * Writes the given translation resources to the corresponding output file.
+     *
+     * @param translations The translation resources.
+     */
     protected fun writeOutput(translations: StringResources) {
 
         val outputFile = androidStringsResFile(translations)
-
-        logger.info("Writing to output file '{}'", outputFile)
 
         if (!outputFile.parentFile.exists()) {
             outputFile.parentFile.mkdirs()
         }
 
-        mapper.writeValue(outputFile, translations)
+        xmlMapper.writeValue(outputFile, translations)
     }
 
     private fun androidStringsResFile(stringResources: StringResources): File {
