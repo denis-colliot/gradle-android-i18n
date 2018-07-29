@@ -18,13 +18,7 @@ group 'com.github.gradle'
 version '1.0'
 
 repositories {
-    maven {
-        url "https://ulice.info.ratp/repo/jcenter"
-        credentials {
-            username uliceArtifactoryUsername
-            password uliceArtifactoryPassword
-        }
-    }
+    jcenter()
 }
 
 dependencies {
