@@ -1,12 +1,12 @@
 package com.github.gradle.android.i18n
 
-import com.github.gradle.android.i18n.generator.Xls2XmlGenerator
+import com.github.gradle.android.i18n.import.XlsImporter
 import jcifs.smb.SmbFile
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.InputStream
 
-open class AndroidI18nPluginExtension(private val xls2XmlGenerator: Xls2XmlGenerator) {
+open class AndroidI18nPluginExtension(private val xlsImporter: XlsImporter) {
 
     /**
      * The source file URI that can be configured in host project.
@@ -35,7 +35,7 @@ open class AndroidI18nPluginExtension(private val xls2XmlGenerator: Xls2XmlGener
     fun importI18nResources() {
         sourceInputStream().use { inputStream ->
             if (sourceFile.endsWith(".xls")) {
-                xls2XmlGenerator.generate(inputStream, defaultLocale.trim())
+                xlsImporter.generate(inputStream, defaultLocale.trim())
             } else {
                 throw UnsupportedOperationException("Source file '$sourceFile' is not supported")
             }

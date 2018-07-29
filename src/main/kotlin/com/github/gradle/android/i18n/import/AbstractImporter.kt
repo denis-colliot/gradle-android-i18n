@@ -1,13 +1,6 @@
-package com.github.gradle.android.i18n.generator
+package com.github.gradle.android.i18n.import
 
 import com.github.gradle.android.i18n.conf.Configuration.xmlMapper
-import com.github.gradle.android.i18n.generator.GeneratorHelper.ARG_PLACEHOLDER
-import com.github.gradle.android.i18n.generator.GeneratorHelper.QUANTITY_SEPARATOR
-import com.github.gradle.android.i18n.generator.GeneratorHelper.SINGLE_QUOTE
-import com.github.gradle.android.i18n.generator.GeneratorHelper.XML_KEY_ILLEGAL_CHARS
-import com.github.gradle.android.i18n.generator.GeneratorHelper.XML_QUOTE
-import com.github.gradle.android.i18n.generator.GeneratorHelper.XML_SINGLE_ARG
-import com.github.gradle.android.i18n.generator.GeneratorHelper.getXmlIndexedArg
 import com.github.gradle.android.i18n.model.StringResources
 import com.github.gradle.android.i18n.model.XmlResource
 import com.github.gradle.android.i18n.model.XmlResources
@@ -15,11 +8,33 @@ import org.gradle.api.Project
 import java.io.File
 import java.io.InputStream
 import java.nio.file.Paths
+import java.util.regex.Pattern
 
 /**
- * Android `xml` string resources generator.
+ * Abstract android i18n resources importer.
+ *
+ * Provides methods to generate `values[-XX]/strings.xml` files from input data.
  */
-abstract class XmlGenerator(private val project: Project) {
+abstract class AbstractImporter(private val project: Project) {
+
+    private companion object {
+
+        const val XML_QUOTE = "\\\\'"
+
+        const val SINGLE_QUOTE = "'"
+
+        const val QUANTITY_SEPARATOR = ":"
+
+        const val XML_SINGLE_ARG = "%s"
+
+        const val ARG_PLACEHOLDER = '#'
+
+        val XML_KEY_ILLEGAL_CHARS = ".*[\\s" + Pattern.quote("+-*/\\;,'()[]{}!?=@|#~&\"^%<>") + "].*"
+
+        fun getXmlIndexedArg(index: Int): String {
+            return "%$index\\\$s"
+        }
+    }
 
     /**
      * Generates the `xml` android string resources file from given source input stream.

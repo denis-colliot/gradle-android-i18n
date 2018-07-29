@@ -1,6 +1,6 @@
 package com.github.gradle.android.i18n
 
-import com.github.gradle.android.i18n.generator.Xls2XmlGenerator
+import com.github.gradle.android.i18n.import.XlsImporter
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -14,7 +14,7 @@ class AndroidI18nPlugin : Plugin<Project> {
 
             val extension = project.extensions.create("androidI18n",
                     AndroidI18nPluginExtension::class.java,
-                    Xls2XmlGenerator(project))
+                    XlsImporter(project))
 
             project.tasks.let {
                 it.create("androidI18nImport").apply {

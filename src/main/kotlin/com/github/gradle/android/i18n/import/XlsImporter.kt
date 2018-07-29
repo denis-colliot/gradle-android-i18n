@@ -1,4 +1,4 @@
-package com.github.gradle.android.i18n.generator
+package com.github.gradle.android.i18n.import
 
 import com.github.gradle.android.i18n.model.StringResources
 import org.apache.poi.ss.usermodel.Row
@@ -7,7 +7,10 @@ import org.gradle.api.Project
 import java.io.InputStream
 import java.util.*
 
-class Xls2XmlGenerator(project: Project) : XmlGenerator(project) {
+/**
+ * Android i18n resources importer from `.xls` source.
+ */
+class XlsImporter(project: Project) : AbstractImporter(project) {
 
     override fun generate(inputStream: InputStream, defaultLocale: String) {
 
