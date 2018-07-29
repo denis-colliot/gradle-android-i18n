@@ -11,6 +11,7 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Ignore
+import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import testutil.AbstractUnitTest
@@ -24,8 +25,8 @@ import java.nio.file.Paths
  */
 class AndroidI18nPluginTest : AbstractUnitTest() {
 
-    //@Rule
-    //@JvmField
+    @Rule
+    @JvmField
     val folder = TemporaryFolder()
 
     private val fileUtils = FileUtils.getFileUtils()
@@ -40,7 +41,6 @@ class AndroidI18nPluginTest : AbstractUnitTest() {
 
     @Before
     fun `set up test`() {
-        folder.create()
         project = ProjectBuilder.builder().withProjectDir(folder.root).build()
         project.pluginManager.apply("com.github.gradle.android-i18n")
 

@@ -13,6 +13,10 @@ class StringResourcesTest : AbstractUnitTest() {
     fun `should read strings resources`() {
         val res = readFile<StringResources>("/strings.xml")
 
+        // Default values.
+        assertEquals("", res.locale)
+        assertFalse(res.defaultLocale)
+
         // Strings.
         assertNotNull(res.strings)
         assertEquals(3, res.strings.size)

@@ -34,7 +34,7 @@ open class AndroidI18nPluginExtension(private val xls2XmlGenerator: Xls2XmlGener
     fun importI18nResources() {
         sourceInputStream().use { inputStream ->
             if (sourceFile.endsWith(".xls")) {
-                xls2XmlGenerator.generate(inputStream, defaultLocale)
+                xls2XmlGenerator.generate(inputStream, defaultLocale.trim())
             } else {
                 throw UnsupportedOperationException("Source file '$sourceFile' is not supported")
             }

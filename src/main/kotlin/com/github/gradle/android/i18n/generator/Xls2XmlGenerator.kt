@@ -4,13 +4,10 @@ import com.github.gradle.android.i18n.model.StringResources
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.WorkbookFactory
 import org.gradle.api.Project
-import org.slf4j.LoggerFactory
 import java.io.InputStream
 import java.util.*
 
 class Xls2XmlGenerator(project: Project) : XmlGenerator(project) {
-
-    private val logger = LoggerFactory.getLogger(Xls2XmlGenerator::class.java)
 
     override fun generate(inputStream: InputStream, defaultLocale: String) {
 
@@ -23,12 +20,9 @@ class Xls2XmlGenerator(project: Project) : XmlGenerator(project) {
                         .asSequence()
                         .filter { it.columnIndex > 0 }
                         .filter { it.stringCellValue.isNotBlank() }
-                        .forEach {
-                            val locale = when (defaultLocale) {
-                                it.stringCellValue -> null
-                                else -> it.stringCellValue
-                            }
-                            stringResources[it.columnIndex] = StringResources(locale)
+                        .forEach { cell ->
+                            val locale = cell.stringCellValue.trim()
+                            stringResources[cell.columnIndex] = StringResources(locale, locale == defaultLocale)
                         }
             } else {
                 val key = row.getCell(0).stringCellValue
@@ -48,13 +42,7 @@ class Xls2XmlGenerator(project: Project) : XmlGenerator(project) {
             }
         }
 
-        stringResources
-                .values
-                .forEach { resources ->
-                    val locale = resources.locale
-                    logger.debug("Translations for locale $locale: $resources")
-                    writeOutput(androidStringsResFile(locale), resources)
-                }
+        stringResources.values.forEach { writeOutput(it) }
     }
 
     private fun readInput(inputStream: InputStream, consumer: (Row) -> Unit) {

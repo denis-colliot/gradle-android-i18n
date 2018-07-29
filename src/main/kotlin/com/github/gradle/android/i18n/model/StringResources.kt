@@ -9,7 +9,10 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement
 data class StringResources(
 
         @JsonIgnore
-        val locale: String? = null,
+        val locale: String = "",
+
+        @JsonIgnore
+        val defaultLocale: Boolean = false,
 
         @JacksonXmlProperty(localName = "string")
         @JacksonXmlElementWrapper(useWrapping = false)

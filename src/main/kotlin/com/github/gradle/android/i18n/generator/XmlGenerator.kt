@@ -51,7 +51,7 @@ abstract class XmlGenerator(private val project: Project) {
             }
 
             translation?.let {
-                addNullSafe(stringResources, cleanKey, translation)
+                addNullSafe(stringResources, cleanKey, it)
             }
         }
     }
@@ -94,7 +94,9 @@ abstract class XmlGenerator(private val project: Project) {
         }
     }
 
-    protected fun writeOutput(outputFile: File, translations: StringResources) {
+    protected fun writeOutput(translations: StringResources) {
+
+        val outputFile = androidStringsResFile(translations)
 
         logger.info("Writing to output file '{}'", outputFile)
 
@@ -105,11 +107,11 @@ abstract class XmlGenerator(private val project: Project) {
         mapper.writeValue(outputFile, translations)
     }
 
-    protected fun androidStringsResFile(locale: String?): File {
-        val localeSuffix = locale?.let {
-            "-${locale.trim()}"
-        } ?: run {
+    private fun androidStringsResFile(stringResources: StringResources): File {
+        val localeSuffix = if (stringResources.defaultLocale) {
             ""
+        } else {
+            "-${stringResources.locale}"
         }
         val projectDir = project.projectDir.absolutePath
         return Paths.get(projectDir, "src", "main", "res", "values$localeSuffix", "strings.xml").toFile()
