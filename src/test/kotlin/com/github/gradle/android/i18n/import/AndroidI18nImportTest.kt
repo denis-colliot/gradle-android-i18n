@@ -108,6 +108,25 @@ class AndroidI18nImportTest : AbstractUnitTest() {
     }
 
     @Test
+    fun `should overwrite existing i18n resources when importing from local xls source`() {
+
+        val extension = extension()
+        extension.sourceFile = resource("/input.xls").path
+
+        // Runnint import a first time.
+        extension.importI18nResources()
+
+        assertTrue(fileUtils.contentEquals(actualFrFile, expectedFrFile, true))
+        assertTrue(fileUtils.contentEquals(actualEnFile, expectedEnFile, true))
+
+        // Running import a second time.
+        extension.importI18nResources()
+
+        assertTrue(fileUtils.contentEquals(actualFrFile, expectedFrFile, true))
+        assertTrue(fileUtils.contentEquals(actualEnFile, expectedEnFile, true))
+    }
+
+    @Test
     @Ignore("Requires remote directory access")
     fun `should import i18n resources from remote samba xls source`() {
         extension().let {
