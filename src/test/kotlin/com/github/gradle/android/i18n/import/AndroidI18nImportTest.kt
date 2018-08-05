@@ -1,10 +1,7 @@
 package com.github.gradle.android.i18n.import
 
 import com.github.gradle.android.i18n.AndroidI18nPluginExtension
-import com.nhaarman.mockito_kotlin.check
-import com.nhaarman.mockito_kotlin.mock
-import com.nhaarman.mockito_kotlin.times
-import com.nhaarman.mockito_kotlin.verify
+import com.nhaarman.mockito_kotlin.*
 import org.apache.tools.ant.util.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
@@ -71,23 +68,42 @@ class AndroidI18nImportTest : AbstractUnitTest() {
                 check { assertEquals("en", it) })
     }
 
-    @Test(expected = FileNotFoundException::class)
-    fun `should fail when importing i18n resources without source file`() {
-        extension().importI18nResources()
+    @Test
+    fun `should do nothing when importing i18n resources without source file`() {
+        mock<XlsImporter>().let {
+            AndroidI18nPluginExtension(it).let {
+                it.importI18nResources()
+            }
+            verify(it, times(0)).generate(any(), any())
+        }
     }
 
-    @Test(expected = FileNotFoundException::class)
-    fun `should fail when importing i18n resources with empty source file`() {
-        extension().let {
-            it.sourceFile = ""
-            it.importI18nResources()
+    @Test
+    fun `should do nothing when importing i18n resources with empty source file`() {
+        mock<XlsImporter>().let {
+            AndroidI18nPluginExtension(it).let {
+                it.sourceFile = ""
+                it.importI18nResources()
+            }
+            verify(it, times(0)).generate(any(), any())
+        }
+    }
+
+    @Test
+    fun `should do nothing when importing i18n resources with blank source file`() {
+        mock<XlsImporter>().let {
+            AndroidI18nPluginExtension(it).let {
+                it.sourceFile = " "
+                it.importI18nResources()
+            }
+            verify(it, times(0)).generate(any(), any())
         }
     }
 
     @Test(expected = FileNotFoundException::class)
     fun `should fail when importing i18n resources with an unexisting file`() {
         extension().let {
-            it.sourceFile = "myfile.xlsx"
+            it.sourceFile = "unexisting_file.xlsx"
             it.importI18nResources()
         }
     }

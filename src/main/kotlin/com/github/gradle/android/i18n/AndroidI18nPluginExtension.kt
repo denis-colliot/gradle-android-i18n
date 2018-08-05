@@ -6,6 +6,9 @@ import java.io.File
 import java.io.FileNotFoundException
 import java.io.InputStream
 
+/**
+ * [AndroidI18nPlugin] extension.
+ */
 open class AndroidI18nPluginExtension(private val xlsImporter: XlsImporter) {
 
     /**
@@ -28,12 +31,18 @@ open class AndroidI18nPluginExtension(private val xlsImporter: XlsImporter) {
     /**
      * Imports the i18n translation resources from the configured [sourceFile].
      *
+     * If the [sourceFile] is not defined (empty or blank), the method does nothing.
+     *
      * @throws FileNotFoundException If the [sourceFile] does not exist.
      * @throws UnsupportedOperationException If the [sourceFile] type is not supported.
      */
     @Throws(FileNotFoundException::class, UnsupportedOperationException::class)
     fun importI18nResources() {
-        sourceInputStream().use { inputStream ->
+        if (sourceFile.isBlank()) {
+            // Does nothing if source file is not configured.
+            return
+        }
+        toInputStream().use { inputStream ->
             if (sourceFile.endsWith(".xls")) {
                 xlsImporter.generate(inputStream, defaultLocale.trim())
             } else {
@@ -49,7 +58,10 @@ open class AndroidI18nPluginExtension(private val xlsImporter: XlsImporter) {
         TODO()
     }
 
-    private fun sourceInputStream(): InputStream {
+    /**
+     * Returns the [InputStream] corresponding to [sourceFile].
+     */
+    private fun toInputStream(): InputStream {
         return when {
             sourceFile.startsWith("smb://") ->
                 // Samba URI.
