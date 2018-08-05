@@ -19,16 +19,7 @@ object Configuration {
 
     init {
         // XmlMapper initialization.
-        xmlMapper = xmlMapper()
-
-        // JCifs configuration.
-        Config.setProperty("jcifs.util.loglevel", "1")
-        Config.setProperty("jcifs.smb.client.responseTimeout", "5000")
-        Config.setProperty("jcifs.smb.client.dfs.disabled", "true")
-    }
-
-    private fun xmlMapper(): XmlMapper {
-        return XmlMapper().apply {
+        xmlMapper = XmlMapper().apply {
             registerKotlinModule()
 
             val indenter = Lf4SpacesIndenter()
@@ -40,5 +31,10 @@ object Configuration {
             configure(SerializationFeature.INDENT_OUTPUT, true)
             configure(ToXmlGenerator.Feature.WRITE_XML_DECLARATION, true)
         }
+
+        // JCifs configuration.
+        Config.setProperty("jcifs.util.loglevel", "1")
+        Config.setProperty("jcifs.smb.client.responseTimeout", "5000")
+        Config.setProperty("jcifs.smb.client.dfs.disabled", "true")
     }
 }

@@ -13,7 +13,8 @@ import org.slf4j.LoggerFactory
  */
 internal class Lf4SpacesIndenter : DefaultXmlPrettyPrinter.Indenter {
 
-    companion object {
+    private companion object {
+
         private val LOGGER: Logger = LoggerFactory.getLogger(Lf4SpacesIndenter::class.java)
 
         private const val SPACE_COUNT = 64

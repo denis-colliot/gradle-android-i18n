@@ -8,7 +8,6 @@ import org.gradle.api.Project
 import java.io.File
 import java.io.InputStream
 import java.nio.file.Paths
-import java.util.regex.Pattern
 
 /**
  * Abstract android i18n resources importer.
@@ -19,19 +18,19 @@ abstract class AbstractImporter(private val project: Project) {
 
     private companion object {
 
-        const val XML_QUOTE = "\\\\'"
+        private const val XML_QUOTE = "\\\\'"
 
-        const val SINGLE_QUOTE = "'"
+        private const val SINGLE_QUOTE = "'"
 
-        const val QUANTITY_SEPARATOR = ":"
+        private const val QUANTITY_SEPARATOR = ":"
 
-        const val XML_SINGLE_ARG = "%s"
+        private const val XML_SINGLE_ARG = "%s"
 
-        const val ARG_PLACEHOLDER = '#'
+        private const val ARG_PLACEHOLDER = '#'
 
-        val XML_KEY_ILLEGAL_CHARS = ".*[\\s" + Pattern.quote("+-*/\\;,'()[]{}!?=@|#~&\"^%<>") + "].*"
+        private val XML_KEY_ILLEGAL_CHARS = ".*[\\s${Regex.escape("+-*/\\;,'()[]{}!?=@|#~&\"^%<>")}].*"
 
-        fun getXmlIndexedArg(index: Int): String {
+        private fun getXmlIndexedArg(index: Int): String {
             return "%$index\\\$s"
         }
     }
@@ -58,8 +57,7 @@ abstract class AbstractImporter(private val project: Project) {
 
         // Validating arguments.
         if (key.isNullOrBlank() || translation.isNullOrBlank()) {
-            throw IllegalArgumentException("Invalid translation key '" + key + "' or corresponding translation " +
-                    "value '" + translation + "'")
+            throw IllegalArgumentException("Invalid translation key '$key' or corresponding translation value '$translation'")
         }
 
         key?.trim()?.let { cleanKey ->
