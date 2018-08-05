@@ -32,11 +32,13 @@ class AndroidI18nImportTest : AbstractUnitTest() {
 
     private val fileUtils = FileUtils.getFileUtils()
 
-    private lateinit var actualFrFile: File
     private lateinit var actualEnFile: File
+    private lateinit var actualFrFile: File
+    private lateinit var actualEsFile: File
 
-    private lateinit var expectedFrFile: File
     private lateinit var expectedEnFile: File
+    private lateinit var expectedFrFile: File
+    private lateinit var expectedEsFile: File
 
     private lateinit var project: Project
 
@@ -46,11 +48,13 @@ class AndroidI18nImportTest : AbstractUnitTest() {
         project.pluginManager.apply("com.github.gradle.android-i18n")
 
         val rootDir = folder.root.absolutePath
-        actualFrFile = Paths.get(rootDir, "src", "main", "res", "values-fr", "strings.xml").toFile()
         actualEnFile = Paths.get(rootDir, "src", "main", "res", "values", "strings.xml").toFile()
+        actualFrFile = Paths.get(rootDir, "src", "main", "res", "values-fr", "strings.xml").toFile()
+        actualEsFile = Paths.get(rootDir, "src", "main", "res", "values-es", "strings.xml").toFile()
 
-        expectedFrFile = File(resource("/fr_strings.xml").path)
         expectedEnFile = File(resource("/en_strings.xml").path)
+        expectedFrFile = File(resource("/fr_strings.xml").path)
+        expectedEsFile = File(resource("/es_strings.xml").path)
     }
 
     @Test
@@ -103,8 +107,9 @@ class AndroidI18nImportTest : AbstractUnitTest() {
             it.importI18nResources()
         }
 
-        assertTrue(fileUtils.contentEquals(actualFrFile, expectedFrFile, true))
         assertTrue(fileUtils.contentEquals(actualEnFile, expectedEnFile, true))
+        assertTrue(fileUtils.contentEquals(actualFrFile, expectedFrFile, true))
+        assertTrue(fileUtils.contentEquals(actualEsFile, expectedEsFile, true))
     }
 
     @Test
@@ -116,14 +121,16 @@ class AndroidI18nImportTest : AbstractUnitTest() {
         // Runnint import a first time.
         extension.importI18nResources()
 
-        assertTrue(fileUtils.contentEquals(actualFrFile, expectedFrFile, true))
         assertTrue(fileUtils.contentEquals(actualEnFile, expectedEnFile, true))
+        assertTrue(fileUtils.contentEquals(actualFrFile, expectedFrFile, true))
+        assertTrue(fileUtils.contentEquals(actualEsFile, expectedEsFile, true))
 
         // Running import a second time.
         extension.importI18nResources()
 
-        assertTrue(fileUtils.contentEquals(actualFrFile, expectedFrFile, true))
         assertTrue(fileUtils.contentEquals(actualEnFile, expectedEnFile, true))
+        assertTrue(fileUtils.contentEquals(actualFrFile, expectedFrFile, true))
+        assertTrue(fileUtils.contentEquals(actualEsFile, expectedEsFile, true))
     }
 
     @Test
@@ -135,11 +142,14 @@ class AndroidI18nImportTest : AbstractUnitTest() {
             it.importI18nResources()
         }
 
+        assertTrue(expectedEnFile.exists())
+        assertTrue(expectedEnFile.length() > 0)
+
         assertTrue(expectedFrFile.exists())
         assertTrue(expectedFrFile.length() > 0)
 
-        assertTrue(expectedEnFile.exists())
-        assertTrue(expectedEnFile.length() > 0)
+        assertTrue(expectedEsFile.exists())
+        assertTrue(expectedEsFile.length() > 0)
     }
 
     @Test
@@ -151,11 +161,14 @@ class AndroidI18nImportTest : AbstractUnitTest() {
             it.importI18nResources()
         }
 
+        assertTrue(expectedEnFile.exists())
+        assertTrue(expectedEnFile.length() > 0)
+
         assertTrue(expectedFrFile.exists())
         assertTrue(expectedFrFile.length() > 0)
 
-        assertTrue(expectedEnFile.exists())
-        assertTrue(expectedEnFile.length() > 0)
+        assertTrue(expectedEsFile.exists())
+        assertTrue(expectedEsFile.length() > 0)
     }
 
     private fun extension(): AndroidI18nPluginExtension {

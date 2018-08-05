@@ -5,9 +5,10 @@
     <string name="trad.key.key_3">Texte de l\'application avec un paramètre %s</string>
     <string name="trad.key.key_4">Texte de l\'application avec deux paramètres %1$s et %2$s</string>
     <string name="trad.key.key_5">Texte avec "guillemets" internes</string>
-    <plurals name="trad.key.key_6">
-        <item quantity="one">1 pomme</item>
-        <item quantity="two">2 pommes</item>
-        <item quantity="many">Plein de pomme</item>
+    <string name="trad.key.key_6">Texte avec nombre %1$d</string>
+    <plurals name="trad.key.key_7">
+        <item quantity="one">Une pomme</item>
+        <item quantity="two">Deux pommes</item>
+        <item quantity="many">Plein de pommes</item>
     </plurals>
 </resources>

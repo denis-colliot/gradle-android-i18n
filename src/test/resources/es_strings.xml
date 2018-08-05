@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources>
+    <string name="trad.key.key_1">Texto de la aplicación escrito en español n°1</string>
+    <string name="trad.key.key_2">Texto de la aplicación escrito en español n°2</string>
+    <string name="trad.key.key_3">Texto de la aplicación con un parámetro %s</string>
+    <string name="trad.key.key_4">Texto de la aplicación con dos parámetros %1$s y %2$s</string>
+    <string name="trad.key.key_5">Texto con "citas" internas</string>
+    <string name="trad.key.key_6">Texto con número %1$d</string>
+    <plurals name="trad.key.key_7">
+        <item quantity="one">Una manzana</item>
+        <item quantity="two">Dos manzanas</item>
+        <item quantity="many">Muchas manzanas</item>
+    </plurals>
+</resources>
