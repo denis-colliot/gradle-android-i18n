@@ -7,12 +7,17 @@ resources files from a given translations (i18n) source file.
 
 The plugin provides the following gradle tasks:
 
-**`androidI18nImport`**: imports the i18n translations from the source file and generates the android resources for each supported locale :
-- `values/strings.xml`
-- `values-fr/strings.xml`
-- `values-es/strings.xml`
+- **`androidI18nImport`**: imports the i18n translations from the source file and generates the android resources for each supported locale :
+  - `values/strings.xml`
+  - `values-fr/strings.xml`
+  - `values-es/strings.xml`
 
-**`androidI18nExport`**: *(WIP: coming soon)*
+- **`androidI18nExport`**: *(WIP: coming soon)*
+
+
+# Installation
+
+Follow the instructions described [here](https://plugins.gradle.org/plugin/com.github.gradle.android-i18n).
 
 
 # Configuration
@@ -28,6 +33,8 @@ androidI18n {
    defaultLocale = 'en'
 }
 ```
+
+An empty (or blank) `sourceFile` simply disabled plugin execution (convenient for Continuous Integration).
 
 
 # Supported sources
