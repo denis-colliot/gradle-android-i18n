@@ -39,11 +39,25 @@ An empty (or blank) `sourceFile` simply disabled plugin execution (convenient fo
 
 # Supported sources
 
-### Supported URI 
-- Samba URI : `smb://<domain>;<login>:<password>@<host>/<path_to_file>`
-- Windows UNC : `\\<host>\<path_to_file>`
+## Supported URI 
 
-### Supported file types
+### Samba URI
+Pattern: `smb://<domain>;<login>:<password>@<host>/<path_to_file>`
+
+The plugin uses [**jcifs**](https://jcifs.samba.org/) to establish a connection with the remote samba URI.
+
+[Jcifs client properties](https://jcifs.samba.org/src/docs/api/overview-summary.html#scp) can be provided
+through gradle project properties using prefix `androidI18n.*`:
+```
+androidI18n.jcifs.smb.client.dfs.disabled=true
+androidI18n.jcifs.smb.client.responseTimeout=5000
+```
+
+### Windows UNC
+Pattern: `\\<host>\<path_to_file>`
+
+
+## Supported file types
 For the moment, the plugin only supports `.xls` source file type. It must respect following structure:
 
 | key | fr | en | es |
