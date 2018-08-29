@@ -11,7 +11,7 @@ import testutil.AbstractUnitTest
 /**
  * Plugin tests.
  */
-class AndroidI18nPluginTest : AbstractUnitTest() {
+class PluginTest : AbstractUnitTest() {
 
     private lateinit var project: Project
 

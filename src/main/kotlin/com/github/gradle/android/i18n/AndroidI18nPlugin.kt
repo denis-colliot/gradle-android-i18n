@@ -13,6 +13,7 @@ class AndroidI18nPlugin : Plugin<Project> {
 
         val extension = project.extensions.create("androidI18n",
                 AndroidI18nPluginExtension::class.java,
+                project,
                 XlsImporter(project))
 
         project.tasks.let { task ->

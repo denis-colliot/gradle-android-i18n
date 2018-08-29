@@ -2,6 +2,7 @@ package com.github.gradle.android.i18n
 
 import com.github.gradle.android.i18n.import.XlsImporter
 import jcifs.smb.SmbFile
+import org.gradle.api.Project
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.InputStream
@@ -9,7 +10,7 @@ import java.io.InputStream
 /**
  * [AndroidI18nPlugin] extension.
  */
-open class AndroidI18nPluginExtension(private val xlsImporter: XlsImporter) {
+open class AndroidI18nPluginExtension(private val project: Project, private val xlsImporter: XlsImporter) {
 
     /**
      * The source file URI that can be configured in host project.
@@ -63,13 +64,23 @@ open class AndroidI18nPluginExtension(private val xlsImporter: XlsImporter) {
      */
     private fun toInputStream(): InputStream {
         return when {
-            sourceFile.startsWith("smb://") ->
+            sourceFile.startsWith("smb://") -> {
                 // Samba URI.
+                project.properties
+                        .filter {
+                            it.key.startsWith("androidI18n.jcifs.")
+                                    && it.value is String
+                                    && (it.value as String).isNotBlank()
+                        }
+                        .forEach {
+                            jcifs.Config.setProperty(it.key.substringAfter('.'), it.value.toString().trim())
+                        }
                 SmbFile(sourceFile).inputStream
-
-            else ->
+            }
+            else -> {
                 // Default case.
                 File(sourceFile).inputStream()
+            }
         }
     }
 }

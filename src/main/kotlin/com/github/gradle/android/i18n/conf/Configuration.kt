@@ -5,7 +5,6 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator
 import com.fasterxml.jackson.dataformat.xml.util.DefaultXmlPrettyPrinter
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import jcifs.Config
 
 /**
  * Project global configuration.
@@ -31,10 +30,5 @@ object Configuration {
             configure(SerializationFeature.INDENT_OUTPUT, true)
             configure(ToXmlGenerator.Feature.WRITE_XML_DECLARATION, true)
         }
-
-        // JCifs configuration.
-        Config.setProperty("jcifs.util.loglevel", "1")
-        Config.setProperty("jcifs.smb.client.responseTimeout", "5000")
-        Config.setProperty("jcifs.smb.client.dfs.disabled", "true")
     }
 }

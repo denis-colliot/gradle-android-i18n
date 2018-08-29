@@ -1,10 +1,9 @@
 package com.github.gradle.android.i18n.import
 
-import com.github.gradle.android.i18n.AndroidI18nPluginExtension
-import com.nhaarman.mockito_kotlin.*
 import org.apache.tools.ant.util.FileUtils
 import org.gradle.testkit.runner.GradleRunner
-import org.junit.Assert.*
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Rule
@@ -12,14 +11,13 @@ import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import testutil.AbstractUnitTest
 import java.io.File
-import java.io.FileInputStream
 import java.io.FileNotFoundException
 import java.nio.file.Paths
 
 /**
  * Plugin import task tests.
  */
-class AndroidI18nImportTest : AbstractUnitTest() {
+class ImportTaskTest : AbstractUnitTest() {
 
     @Rule
     @JvmField
@@ -70,9 +68,9 @@ class AndroidI18nImportTest : AbstractUnitTest() {
 
         // gradle.properties
         folder.newFile("gradle.properties").writeText("""
-            jcifs.smb.client.dfs.disabled=true
-            jcifs.smb.client.responseTimeout=5000
-            jcifs.util.loglevel=1
+            androidI18n.jcifs.smb.client.dfs.disabled=true
+            androidI18n.jcifs.smb.client.responseTimeout=5000
+            androidI18n.jcifs.util.loglevel=1
         """.trimIndent())
 
         return GradleRunner.create()
@@ -80,50 +78,6 @@ class AndroidI18nImportTest : AbstractUnitTest() {
                 .withPluginClasspath()
                 .withDebug(true)
                 .withArguments("androidI18nImport")
-    }
-
-    @Test
-    fun `should use 'FileInputStream' when importing i18n resources from xls source`() {
-        val xls2XmlGenerator = mock<XlsImporter>()
-
-        AndroidI18nPluginExtension(xls2XmlGenerator).apply {
-            sourceFile = resource("/input.xls").path
-            importI18nResources()
-        }
-
-        verify(xls2XmlGenerator, times(1)).generate(
-                check { assertTrue(it is FileInputStream) },
-                check { assertEquals("en", it) })
-    }
-
-    @Test
-    fun `should do nothing when importing i18n resources without source file`() {
-        mock<XlsImporter>().let { importer ->
-            AndroidI18nPluginExtension(importer).importI18nResources()
-            verify(importer, times(0)).generate(any(), any())
-        }
-    }
-
-    @Test
-    fun `should do nothing when importing i18n resources with empty source file`() {
-        mock<XlsImporter>().let { importer ->
-            AndroidI18nPluginExtension(importer).apply {
-                sourceFile = ""
-                importI18nResources()
-            }
-            verify(importer, times(0)).generate(any(), any())
-        }
-    }
-
-    @Test
-    fun `should do nothing when importing i18n resources with blank source file`() {
-        mock<XlsImporter>().let { importer ->
-            AndroidI18nPluginExtension(importer).apply {
-                sourceFile = " "
-                importI18nResources()
-            }
-            verify(importer, times(0)).generate(any(), any())
-        }
     }
 
     @Test
