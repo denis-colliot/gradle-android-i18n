@@ -3,10 +3,8 @@ package com.github.gradle.android.i18n.import
 import com.github.gradle.android.i18n.AndroidI18nPluginExtension
 import com.nhaarman.mockito_kotlin.*
 import org.apache.tools.ant.util.FileUtils
-import org.gradle.api.Project
-import org.gradle.testfixtures.ProjectBuilder
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
+import org.gradle.testkit.runner.GradleRunner
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Rule
@@ -37,13 +35,8 @@ class AndroidI18nImportTest : AbstractUnitTest() {
     private lateinit var expectedFrFile: File
     private lateinit var expectedEsFile: File
 
-    private lateinit var project: Project
-
     @Before
     fun `set up test`() {
-        project = ProjectBuilder.builder().withProjectDir(folder.root).build()
-        project.pluginManager.apply("com.github.gradle.android-i18n")
-
         val rootDir = folder.root.absolutePath
         actualEnFile = Paths.get(rootDir, "src", "main", "res", "values", "strings.xml").toFile()
         actualFrFile = Paths.get(rootDir, "src", "main", "res", "values-fr", "strings.xml").toFile()
@@ -54,13 +47,48 @@ class AndroidI18nImportTest : AbstractUnitTest() {
         expectedEsFile = File(resource("/es_strings.xml").path)
     }
 
+    /**
+     * Initialize the [folder] with a test gradle project.
+     *
+     * @param sourceFile The source file path set up in `androidI18nImport` task.
+     * @param defaultLocale The default locale set up in `androidI18nImport` task.
+     * @return The [GradleRunner] set up to run `androidI18nImport` task.
+     */
+    private fun setUpImportTask(sourceFile: String, defaultLocale: String = "en"): GradleRunner {
+
+        // build.gradle
+        folder.newFile("build.gradle").writeText("""
+            plugins {
+                id 'com.github.gradle.android-i18n'
+            }
+
+            androidI18n {
+                sourceFile = '$sourceFile'
+                defaultLocale = '$defaultLocale'
+            }
+        """.trimIndent())
+
+        // gradle.properties
+        folder.newFile("gradle.properties").writeText("""
+            jcifs.smb.client.dfs.disabled=true
+            jcifs.smb.client.responseTimeout=5000
+            jcifs.util.loglevel=1
+        """.trimIndent())
+
+        return GradleRunner.create()
+                .withProjectDir(folder.root)
+                .withPluginClasspath()
+                .withDebug(true)
+                .withArguments("androidI18nImport")
+    }
+
     @Test
     fun `should use 'FileInputStream' when importing i18n resources from xls source`() {
         val xls2XmlGenerator = mock<XlsImporter>()
 
-        AndroidI18nPluginExtension(xls2XmlGenerator).let {
-            it.sourceFile = resource("/input.xls").path
-            it.importI18nResources()
+        AndroidI18nPluginExtension(xls2XmlGenerator).apply {
+            sourceFile = resource("/input.xls").path
+            importI18nResources()
         }
 
         verify(xls2XmlGenerator, times(1)).generate(
@@ -70,58 +98,54 @@ class AndroidI18nImportTest : AbstractUnitTest() {
 
     @Test
     fun `should do nothing when importing i18n resources without source file`() {
-        mock<XlsImporter>().let {
-            AndroidI18nPluginExtension(it).let {
-                it.importI18nResources()
-            }
-            verify(it, times(0)).generate(any(), any())
+        mock<XlsImporter>().let { importer ->
+            AndroidI18nPluginExtension(importer).importI18nResources()
+            verify(importer, times(0)).generate(any(), any())
         }
     }
 
     @Test
     fun `should do nothing when importing i18n resources with empty source file`() {
-        mock<XlsImporter>().let {
-            AndroidI18nPluginExtension(it).let {
-                it.sourceFile = ""
-                it.importI18nResources()
+        mock<XlsImporter>().let { importer ->
+            AndroidI18nPluginExtension(importer).apply {
+                sourceFile = ""
+                importI18nResources()
             }
-            verify(it, times(0)).generate(any(), any())
+            verify(importer, times(0)).generate(any(), any())
         }
     }
 
     @Test
     fun `should do nothing when importing i18n resources with blank source file`() {
-        mock<XlsImporter>().let {
-            AndroidI18nPluginExtension(it).let {
-                it.sourceFile = " "
-                it.importI18nResources()
+        mock<XlsImporter>().let { importer ->
+            AndroidI18nPluginExtension(importer).apply {
+                sourceFile = " "
+                importI18nResources()
             }
-            verify(it, times(0)).generate(any(), any())
-        }
-    }
-
-    @Test(expected = FileNotFoundException::class)
-    fun `should fail when importing i18n resources with an unexisting file`() {
-        extension().let {
-            it.sourceFile = "unexisting_file.xlsx"
-            it.importI18nResources()
-        }
-    }
-
-    @Test(expected = UnsupportedOperationException::class)
-    fun `should fail when importing i18n resources with an unsupported file type`() {
-        extension().let {
-            it.sourceFile = resource("/input.xlsx").path
-            it.importI18nResources()
+            verify(importer, times(0)).generate(any(), any())
         }
     }
 
     @Test
+    fun `should fail when importing i18n resources with an unexisting file`() {
+        val buildResult = setUpImportTask("unexisting_file.xlsx").buildAndFail()
+        assertNotNull(buildResult)
+        assertNotNull(buildResult.output)
+        assertTrue(buildResult.output.contains(FileNotFoundException::class.java.simpleName))
+    }
+
+    @Test
+    fun `should fail when importing i18n resources with an unsupported file type`() {
+        val sourceFile = resource("/input.xlsx").path
+        val buildResult = setUpImportTask(sourceFile).buildAndFail()
+        assertNotNull(buildResult)
+        assertNotNull(buildResult.output)
+        assertTrue(buildResult.output.contains("Source file '$sourceFile' is not supported"))
+    }
+
+    @Test
     fun `should import i18n resources from local xls source`() {
-        extension().let {
-            it.sourceFile = resource("/input.xls").path
-            it.importI18nResources()
-        }
+        setUpImportTask(resource("/input.xls").path).build()
 
         assertTrue(fileUtils.contentEquals(actualEnFile, expectedEnFile, true))
         assertTrue(fileUtils.contentEquals(actualFrFile, expectedFrFile, true))
@@ -131,18 +155,17 @@ class AndroidI18nImportTest : AbstractUnitTest() {
     @Test
     fun `should overwrite existing i18n resources when importing from local xls source`() {
 
-        val extension = extension()
-        extension.sourceFile = resource("/input.xls").path
+        val importTask = setUpImportTask(resource("/input.xls").path)
 
-        // Runnint import a first time.
-        extension.importI18nResources()
+        // Running import a first time.
+        importTask.build()
 
         assertTrue(fileUtils.contentEquals(actualEnFile, expectedEnFile, true))
         assertTrue(fileUtils.contentEquals(actualFrFile, expectedFrFile, true))
         assertTrue(fileUtils.contentEquals(actualEsFile, expectedEsFile, true))
 
         // Running import a second time.
-        extension.importI18nResources()
+        importTask.build()
 
         assertTrue(fileUtils.contentEquals(actualEnFile, expectedEnFile, true))
         assertTrue(fileUtils.contentEquals(actualFrFile, expectedFrFile, true))
@@ -152,11 +175,8 @@ class AndroidI18nImportTest : AbstractUnitTest() {
     @Test
     @Ignore("Requires remote directory access")
     fun `should import i18n resources from remote samba xls source`() {
-        extension().let {
-            it.sourceFile = "smb://RATP;<login>:<pwd>@urbanbox.info.ratp/sit-cps-ivs/Domaine Agile/" +
-                    "Appli RATP/Android/Application RATP V3/Ressources/Traductions/i18n.xls"
-            it.importI18nResources()
-        }
+        setUpImportTask("smb://RATP;<login>:<pwd>@urbanbox.info.ratp/sit-cps-ivs/Domaine Agile/" +
+                "Appli RATP/Android/Application RATP V3/Ressources/Traductions/i18n.xls").build()
 
         assertTrue(expectedEnFile.exists())
         assertTrue(expectedEnFile.length() > 0)
@@ -171,11 +191,8 @@ class AndroidI18nImportTest : AbstractUnitTest() {
     @Test
     @Ignore("Requires remote directory access")
     fun `should import i18n resources from remote windows xls source`() {
-        extension().let {
-            it.sourceFile = "\\\\urbanbox.info.ratp\\sit-cps-ivs\\Domaine Agile\\Appli RATP\\Android\\" +
-                    "Application RATP V3\\Ressources\\Traductions\\i18n.xls"
-            it.importI18nResources()
-        }
+        setUpImportTask("\\\\urbanbox.info.ratp\\sit-cps-ivs\\Domaine Agile\\Appli RATP\\Android\\" +
+                "Application RATP V3\\Ressources\\Traductions\\i18n.xls").build()
 
         assertTrue(expectedEnFile.exists())
         assertTrue(expectedEnFile.length() > 0)
@@ -185,9 +202,5 @@ class AndroidI18nImportTest : AbstractUnitTest() {
 
         assertTrue(expectedEsFile.exists())
         assertTrue(expectedEsFile.length() > 0)
-    }
-
-    private fun extension(): AndroidI18nPluginExtension {
-        return project.extensions.getByType(AndroidI18nPluginExtension::class.java)
     }
 }

@@ -10,6 +10,7 @@ buildscript {
 }
 
 plugins {
+    id 'java-gradle-plugin' // Adds 'gradleApi()' and 'gradleTestKit()' dependencies.
     id 'org.jetbrains.kotlin.jvm' version '1.2.60'
     id 'com.gradle.plugin-publish' version '0.9.10'
 }
@@ -22,11 +23,9 @@ repositories {
 }
 
 dependencies {
-    testImplementation gradleTestKit()
     testImplementation "junit:junit:${versions.junit}"
     testImplementation "com.nhaarman:mockito-kotlin-kt1.1:${versions.mockitoKotlin}"
 
-    implementation gradleApi()
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-csv:${versions.jackson}"
     implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:${versions.jackson}"
