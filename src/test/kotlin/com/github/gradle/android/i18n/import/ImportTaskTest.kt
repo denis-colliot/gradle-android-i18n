@@ -98,6 +98,14 @@ class ImportTaskTest : AbstractUnitTest() {
     }
 
     @Test
+    fun `should fail when importing i18n resources with a duplicated key`() {
+        val buildResult = setUpImportTask(resource("/input_with_duplicated_key.xls").path).buildAndFail()
+        assertNotNull(buildResult)
+        assertNotNull(buildResult.output)
+        assertTrue(buildResult.output.contains("Duplicated key 'trad.key.key_1'"))
+    }
+
+    @Test
     fun `should import i18n resources from local xls source`() {
         setUpImportTask(resource("/input.xls").path).build()
 

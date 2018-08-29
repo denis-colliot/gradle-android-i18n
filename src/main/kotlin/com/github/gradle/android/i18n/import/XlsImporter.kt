@@ -28,7 +28,7 @@ class XlsImporter(project: Project) : AbstractImporter(project) {
                             stringResources[cell.columnIndex] = StringResources(locale, locale == defaultLocale)
                         }
             } else {
-                val key = row.getCell(0).stringCellValue
+                val key = row.getCell(0).stringCellValue.trim()
 
                 if (!keys.add(key)) {
                     throw IllegalArgumentException("Duplicated key '$key'")
