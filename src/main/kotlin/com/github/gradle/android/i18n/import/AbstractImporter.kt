@@ -119,6 +119,9 @@ abstract class AbstractImporter(private val project: Project) {
             outputFile.parentFile.mkdirs()
         }
 
+        translations.strings.sortBy { it.name }
+        translations.plurals.sortBy { it.name }
+
         xmlMapper.writeValue(outputFile, translations)
     }
 
