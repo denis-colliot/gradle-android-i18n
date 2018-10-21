@@ -8,7 +8,7 @@ import java.io.InputStream
 import java.util.*
 
 /**
- * Android i18n resources importer from `.xls` source.
+ * Android i18n resources importer from `.xls` and `.xlsx` sources.
  */
 class XlsImporter(project: Project) : AbstractImporter(project) {
 

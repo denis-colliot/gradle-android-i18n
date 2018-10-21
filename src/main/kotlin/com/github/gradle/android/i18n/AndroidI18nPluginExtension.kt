@@ -39,15 +39,18 @@ open class AndroidI18nPluginExtension(private val project: Project, private val 
      */
     @Throws(FileNotFoundException::class, UnsupportedOperationException::class)
     fun importI18nResources() {
-        if (sourceFile.isBlank()) {
-            // Does nothing if source file is not configured.
-            return
-        }
-        toInputStream().use { inputStream ->
-            if (sourceFile.endsWith(".xls")) {
-                xlsImporter.generate(inputStream, defaultLocale.trim())
-            } else {
-                throw UnsupportedOperationException("Source file '$sourceFile' is not supported")
+        sourceFile.apply {
+            if (isBlank()) {
+                // Does nothing if source file is not configured.
+                return
+            }
+
+            toInputStream().use { inputStream ->
+                when {
+                    endsWith(".xls") -> xlsImporter.generate(inputStream, defaultLocale.trim())
+                    endsWith(".xlsx") -> xlsImporter.generate(inputStream, defaultLocale.trim())
+                    else -> throw UnsupportedOperationException("Source file '$this' is not supported")
+                }
             }
         }
     }
