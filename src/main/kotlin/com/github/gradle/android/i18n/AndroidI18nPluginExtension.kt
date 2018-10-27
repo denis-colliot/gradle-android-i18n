@@ -10,7 +10,10 @@ import java.io.InputStream
 /**
  * [AndroidI18nPlugin] extension.
  */
-open class AndroidI18nPluginExtension(private val project: Project, private val xlsImporter: XlsImporter) {
+open class AndroidI18nPluginExtension(
+        private val project: Project,
+        private val xlsImporter: XlsImporter
+) {
 
     /**
      * The source file URI that can be configured in host project.
@@ -69,15 +72,7 @@ open class AndroidI18nPluginExtension(private val project: Project, private val 
         return when {
             sourceFile.startsWith("smb://") -> {
                 // Samba URI.
-                project.properties
-                        .filter {
-                            it.key.startsWith("androidI18n.jcifs.")
-                                    && it.value is String
-                                    && (it.value as String).isNotBlank()
-                        }
-                        .forEach {
-                            jcifs.Config.setProperty(it.key.substringAfter('.'), it.value.toString().trim())
-                        }
+                setJcifsProperties()
                 SmbFile(sourceFile).inputStream
             }
             else -> {
@@ -85,5 +80,20 @@ open class AndroidI18nPluginExtension(private val project: Project, private val 
                 File(sourceFile).inputStream()
             }
         }
+    }
+
+    /**
+     * Sets the JCIFS properties based on *project* configuration properties starting with "`androidI18n.jcifs.*`".
+     */
+    private fun setJcifsProperties() {
+        project.properties
+                .filter {
+                    it.key.startsWith("androidI18n.jcifs.")
+                            && it.value is String
+                            && (it.value as String).isNotBlank()
+                }
+                .forEach {
+                    jcifs.Config.setProperty(it.key.substringAfter('.'), it.value.toString().trim())
+                }
     }
 }

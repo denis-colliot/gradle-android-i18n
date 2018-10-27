@@ -12,24 +12,26 @@ import java.io.FileInputStream
  */
 class AndroidI18nImportXlsxTest : AbstractAndroidI18nImportTest() {
 
+    private val xlsxResource = resource("/input.xlsx")
+
     @Test
     fun `should use 'FileInputStream' when importing i18n resources from xlsx source`() {
-        val xls2XmlGenerator = mock<XlsImporter>()
+        with(mock<XlsImporter>()) {
+            AndroidI18nPluginExtension(mock(), this).apply {
+                sourceFile = xlsxResource.path
+                importI18nResources()
+            }
 
-        AndroidI18nPluginExtension(xls2XmlGenerator).apply {
-            sourceFile = resource("/input.xlsx").path
-            importI18nResources()
+            verify(this, times(1)).generate(
+                    isA<FileInputStream>(),
+                    eq("en"))
         }
-
-        verify(xls2XmlGenerator, times(1)).generate(
-                check { assertThat(it).isInstanceOf(FileInputStream::class.java) },
-                eq("en"))
     }
 
     @Test
     fun `should import i18n resources from local xlsx source`() {
         extension().apply {
-            sourceFile = resource("/input.xlsx").path
+            sourceFile = xlsxResource.path
             importI18nResources()
         }
 
@@ -42,10 +44,10 @@ class AndroidI18nImportXlsxTest : AbstractAndroidI18nImportTest() {
     fun `should overwrite existing i18n resources when importing from local xlsx source`() {
 
         val extension = extension().apply {
-            sourceFile = resource("/input.xlsx").path
+            sourceFile = xlsxResource.path
         }
 
-        // Runnint import a first time.
+        // Running import a first time.
         extension.importI18nResources()
 
         assertThat(contentOf(actualEnFile)).isEqualTo(contentOf(expectedEnFile))

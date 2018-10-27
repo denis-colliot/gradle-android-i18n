@@ -13,24 +13,26 @@ import java.io.FileInputStream
  */
 class AndroidI18nImportXlsTest : AbstractAndroidI18nImportTest() {
 
+    private val xlsResource = resource("/input.xls")
+
     @Test
     fun `should use 'FileInputStream' when importing i18n resources from xls source`() {
-        val xls2XmlGenerator = mock<XlsImporter>()
+        with(mock<XlsImporter>()) {
+            AndroidI18nPluginExtension(mock(), this).apply {
+                sourceFile = xlsResource.path
+                importI18nResources()
+            }
 
-        AndroidI18nPluginExtension(xls2XmlGenerator).apply {
-            sourceFile = resource("/input.xls").path
-            importI18nResources()
+            verify(this, times(1)).generate(
+                    isA<FileInputStream>(),
+                    eq("en"))
         }
-
-        verify(xls2XmlGenerator, times(1)).generate(
-                check { assertThat(it is FileInputStream) },
-                eq("en"))
     }
 
     @Test
     fun `should import i18n resources from local xls source`() {
         extension().apply {
-            sourceFile = resource("/input.xls").path
+            sourceFile = xlsResource.path
             importI18nResources()
         }
 
@@ -43,7 +45,7 @@ class AndroidI18nImportXlsTest : AbstractAndroidI18nImportTest() {
     fun `should overwrite existing i18n resources when importing from local xls source`() {
 
         val extension = extension().apply {
-            sourceFile = resource("/input.xls").path
+            sourceFile = xlsResource.path
         }
 
         // Runnint import a first time.
@@ -65,8 +67,7 @@ class AndroidI18nImportXlsTest : AbstractAndroidI18nImportTest() {
     @Ignore("Requires remote directory access")
     fun `should import i18n resources from remote samba xls source`() {
         extension().apply {
-            sourceFile = "smb://RATP;<login>:<pwd>@urbanbox.info.ratp/sit-cps-ivs/Domaine Agile/" +
-                    "Appli RATP/Android/Application RATP V3/Ressources/Traductions/i18n.xls"
+            sourceFile = "smb://<domain>;<login>:<pwd>@<host>/path/to/file.xls"
             importI18nResources()
         }
 
@@ -84,8 +85,7 @@ class AndroidI18nImportXlsTest : AbstractAndroidI18nImportTest() {
     @Ignore("Requires remote directory access")
     fun `should import i18n resources from remote windows xls source`() {
         extension().apply {
-            sourceFile = "\\\\urbanbox.info.ratp\\sit-cps-ivs\\Domaine Agile\\Appli RATP\\Android\\" +
-                    "Application RATP V3\\Ressources\\Traductions\\i18n.xls"
+            sourceFile = "\\\\<host>\\path\\to\\file.xls"
             importI18nResources()
         }
 

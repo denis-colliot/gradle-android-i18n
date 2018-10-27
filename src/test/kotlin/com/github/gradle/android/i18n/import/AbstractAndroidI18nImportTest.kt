@@ -61,7 +61,7 @@ abstract class AbstractAndroidI18nImportTest : AbstractUnitTest() {
     @Test
     fun `should do nothing when importing i18n resources without source file`() {
         mock<XlsImporter>().apply {
-            AndroidI18nPluginExtension(this).apply {
+            AndroidI18nPluginExtension(mock(), this).apply {
                 importI18nResources()
             }
             verify(this, times(0)).generate(any(), any())
@@ -71,7 +71,7 @@ abstract class AbstractAndroidI18nImportTest : AbstractUnitTest() {
     @Test
     fun `should do nothing when importing i18n resources with empty source file`() {
         mock<XlsImporter>().apply {
-            AndroidI18nPluginExtension(this).apply {
+            AndroidI18nPluginExtension(mock(), this).apply {
                 sourceFile = ""
                 importI18nResources()
             }
@@ -82,7 +82,7 @@ abstract class AbstractAndroidI18nImportTest : AbstractUnitTest() {
     @Test
     fun `should do nothing when importing i18n resources with blank source file`() {
         mock<XlsImporter>().apply {
-            AndroidI18nPluginExtension(this).apply {
+            AndroidI18nPluginExtension(mock(), this).apply {
                 sourceFile = " "
                 importI18nResources()
             }
