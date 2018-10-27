@@ -28,7 +28,7 @@ abstract class AbstractImporter(private val project: Project) {
 
         private const val ARG_PLACEHOLDER = '#'
 
-        private val XML_KEY_ILLEGAL_CHARS = ".*[\\s${Regex.escape("+-*/\\;,'()[]{}!?=@|#~&\"^%<>")}].*"
+        private val XML_KEY_ILLEGAL_CHARS = ".*[\\s${Regex.escape("+-*/\\;,'()[]{}!?=@|#~&\"^%<>")}].*".toRegex()
 
         private fun getXmlIndexedArg(index: Int): String {
             return "%$index\\\$s"
@@ -57,12 +57,12 @@ abstract class AbstractImporter(private val project: Project) {
 
         // Validating arguments.
         if (key.isNullOrBlank() || translation.isNullOrBlank()) {
-            throw IllegalArgumentException("Invalid translation key '$key' or corresponding translation value '$translation'")
+            throw IllegalArgumentException("Invalid translation key `$key` or corresponding translation value `$translation`")
         }
 
         key?.trim()?.let { cleanKey ->
-            if (XML_KEY_ILLEGAL_CHARS.toRegex().containsMatchIn(cleanKey)) {
-                throw IllegalArgumentException("Invalid translation key '$cleanKey'")
+            if (XML_KEY_ILLEGAL_CHARS.containsMatchIn(cleanKey)) {
+                throw IllegalArgumentException("Invalid translation key `$cleanKey`")
             }
 
             translation?.let {

@@ -49,7 +49,7 @@ open class AndroidI18nPluginExtension(private val project: Project, private val 
                 when {
                     endsWith(".xls") -> xlsImporter.generate(inputStream, defaultLocale.trim())
                     endsWith(".xlsx") -> xlsImporter.generate(inputStream, defaultLocale.trim())
-                    else -> throw UnsupportedOperationException("Source file '$this' is not supported")
+                    else -> throw UnsupportedOperationException("Source file `$this` is not supported")
                 }
             }
         }

@@ -31,7 +31,7 @@ class XlsImporter(project: Project) : AbstractImporter(project) {
                 val key = row.getCell(0).stringCellValue.trim()
 
                 if (!keys.add(key)) {
-                    throw IllegalArgumentException("Duplicated key '$key'")
+                    throw IllegalArgumentException("Duplicated key `$key`")
                 }
 
                 row.cellIterator()
