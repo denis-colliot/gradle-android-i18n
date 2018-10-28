@@ -1,20 +1,13 @@
 package com.github.gradle.android.i18n.import
 
 import com.github.gradle.android.i18n.AndroidI18nPluginExtension
-import com.nhaarman.mockito_kotlin.any
-import com.nhaarman.mockito_kotlin.mock
-import com.nhaarman.mockito_kotlin.times
-import com.nhaarman.mockito_kotlin.verify
-import org.assertj.core.api.Assertions.assertThatExceptionOfType
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Before
 import org.junit.Rule
-import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import testutil.AbstractUnitTest
 import java.io.File
-import java.io.FileNotFoundException
 import java.nio.file.Paths
 
 /**
@@ -55,60 +48,4 @@ abstract class AbstractAndroidI18nImportTest : AbstractUnitTest() {
     protected fun extension(): AndroidI18nPluginExtension {
         return project.extensions.getByType(AndroidI18nPluginExtension::class.java)
     }
-
-    // region Common import tests
-
-    @Test
-    fun `should do nothing when importing i18n resources without source file`() {
-        mock<XlsImporter>().apply {
-            AndroidI18nPluginExtension(mock(), this).apply {
-                importI18nResources()
-            }
-            verify(this, times(0)).generate(any(), any())
-        }
-    }
-
-    @Test
-    fun `should do nothing when importing i18n resources with empty source file`() {
-        mock<XlsImporter>().apply {
-            AndroidI18nPluginExtension(mock(), this).apply {
-                sourceFile = ""
-                importI18nResources()
-            }
-            verify(this, times(0)).generate(any(), any())
-        }
-    }
-
-    @Test
-    fun `should do nothing when importing i18n resources with blank source file`() {
-        mock<XlsImporter>().apply {
-            AndroidI18nPluginExtension(mock(), this).apply {
-                sourceFile = " "
-                importI18nResources()
-            }
-            verify(this, times(0)).generate(any(), any())
-        }
-    }
-
-    @Test
-    fun `should fail when importing i18n resources with an unexisting file`() {
-        assertThatExceptionOfType(FileNotFoundException::class.java).isThrownBy {
-            extension().apply {
-                sourceFile = "unexisting_file.xls"
-                importI18nResources()
-            }
-        }
-    }
-
-    @Test
-    fun `should fail when importing i18n resources with an unsupported file type`() {
-        assertThatExceptionOfType(UnsupportedOperationException::class.java).isThrownBy {
-            extension().apply {
-                sourceFile = resource("/input.unsupported").path
-                importI18nResources()
-            }
-        }
-    }
-
-    // endregion
 }

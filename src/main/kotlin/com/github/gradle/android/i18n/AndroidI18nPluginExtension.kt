@@ -50,8 +50,7 @@ open class AndroidI18nPluginExtension(
 
             toInputStream().use { inputStream ->
                 when {
-                    endsWith(".xls") -> xlsImporter.generate(inputStream, defaultLocale.trim())
-                    endsWith(".xlsx") -> xlsImporter.generate(inputStream, defaultLocale.trim())
+                    endsWith(".xls") || endsWith(".xlsx") -> xlsImporter.generate(inputStream, defaultLocale)
                     else -> throw UnsupportedOperationException("Source file `$this` is not supported")
                 }
             }
@@ -84,6 +83,8 @@ open class AndroidI18nPluginExtension(
 
     /**
      * Sets the JCIFS properties based on *project* configuration properties starting with "`androidI18n.jcifs.*`".
+     *
+     * @see jcifs.Config
      */
     private fun setJcifsProperties() {
         project.properties

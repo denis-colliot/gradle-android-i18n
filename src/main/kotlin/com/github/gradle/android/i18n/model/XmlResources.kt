@@ -3,6 +3,9 @@ package com.github.gradle.android.i18n.model
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
 
+/**
+ * Android XML values.
+ */
 data class XmlResources(
 
         @JacksonXmlProperty(isAttribute = true)

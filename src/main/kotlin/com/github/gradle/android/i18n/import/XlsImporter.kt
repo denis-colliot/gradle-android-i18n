@@ -1,51 +1,47 @@
 package com.github.gradle.android.i18n.import
 
-import com.github.gradle.android.i18n.model.StringResources
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.WorkbookFactory
 import org.gradle.api.Project
 import java.io.InputStream
-import java.util.*
 
 /**
  * Android i18n resources importer from `.xls` and `.xlsx` sources.
  */
 class XlsImporter(project: Project) : AbstractImporter(project) {
 
-    override fun generate(inputStream: InputStream, defaultLocale: String) {
+    override fun generate(inputStream: InputStream, handler: ImportHandler) {
 
-        val keys = HashSet<String>()
-        val stringResources = mutableMapOf<Int, StringResources>()
+        /**
+         * Map storing each locale to its corresponding column index.
+         */
+        val localizedColumns = mutableMapOf<Int, String>()
 
         readInput(inputStream) { row ->
             if (row.rowNum == 0) {
+                // Reading locales row and initializing `StringResources`.
                 row.cellIterator()
                         .asSequence()
                         .filter { it.columnIndex > 0 }
                         .filter { it.stringCellValue.isNotBlank() }
                         .forEach { cell ->
-                            val locale = cell.stringCellValue.trim()
-                            stringResources[cell.columnIndex] = StringResources(locale, locale == defaultLocale)
+                            val locale = cell.stringCellValue
+                            handler.addLocale(locale)
+                            localizedColumns[cell.columnIndex] = locale
                         }
             } else {
-                val key = row.getCell(0).stringCellValue.trim()
+                // Reading other data row.
+                val key = row.getCell(0)?.stringCellValue
 
-                if (!keys.add(key)) {
-                    throw IllegalArgumentException("Duplicated key `$key`")
-                }
+                val translations = localizedColumns
+                        .map { Pair(it.value, row.getCell(it.key)?.stringCellValue) }
+                        .toMap()
 
-                row.cellIterator()
-                        .asSequence()
-                        .filter { it.columnIndex > 0 }
-                        .forEach { cell ->
-                            stringResources[cell.columnIndex]?.let {
-                                add(it, key, cell.stringCellValue)
-                            }
-                        }
+                handler.addTranslations(key, translations)
             }
         }
 
-        stringResources.values.forEach { writeOutput(it) }
+        handler.writeOutput()
     }
 
     private fun readInput(inputStream: InputStream, consumer: (Row) -> Unit) {
