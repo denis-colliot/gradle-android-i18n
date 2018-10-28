@@ -2,8 +2,7 @@ package com.github.gradle.android.i18n.import
 
 import com.github.gradle.android.i18n.AndroidI18nPluginExtension
 import com.nhaarman.mockito_kotlin.*
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import testutil.AbstractUnitTest
 import java.io.FileInputStream
@@ -18,13 +17,17 @@ class PluginExtensionTest : AbstractUnitTest() {
         val xls2XmlGenerator = mock<XlsImporter>()
 
         AndroidI18nPluginExtension(mock(), xls2XmlGenerator).apply {
-            sourceFile = resource("/input.xls").path
+            sourceFile = resource("/xls-import/input.xls").path
             importI18nResources()
         }
 
         verify(xls2XmlGenerator, times(1)).generate(
-                check { assertTrue(it is FileInputStream) },
-                check { assertEquals("en", it) })
+                check { assertThat(it).isInstanceOf(FileInputStream::class.java) },
+                check {
+                    assertThat(it.defaultLocale).isEqualTo("en")
+                    assertThat(it.allSheets).isFalse()
+                    assertThat(it.sheetNameRegex.pattern).isEqualTo("^.*$")
+                })
     }
 
     @Test

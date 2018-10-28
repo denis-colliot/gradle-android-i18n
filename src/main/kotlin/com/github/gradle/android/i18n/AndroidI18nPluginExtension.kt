@@ -1,5 +1,6 @@
 package com.github.gradle.android.i18n
 
+import com.github.gradle.android.i18n.import.ImportConfig
 import com.github.gradle.android.i18n.import.XlsImporter
 import jcifs.smb.SmbFile
 import org.gradle.api.Project
@@ -33,6 +34,20 @@ open class AndroidI18nPluginExtension(
     var defaultLocale: String = "en"
 
     /**
+     * Import all sheets when using `xls`/`xlsx` source file.
+     *
+     * Default is `false`.
+     */
+    var importAllSheets: Boolean = false
+
+    /**
+     * Sheet names filter when using `xls`/`xlsx` source file and [importAllSheets] is set to `true`.
+     *
+     * Default is `.*` to read all sheets.
+     */
+    var importSheetNameRegex: String = "^.*$"
+
+    /**
      * Imports the i18n translation resources from the configured [sourceFile].
      *
      * If the [sourceFile] is not defined (empty or blank), the method does nothing.
@@ -48,9 +63,11 @@ open class AndroidI18nPluginExtension(
                 return
             }
 
+            val config = ImportConfig(defaultLocale, importAllSheets, importSheetNameRegex.toRegex())
+
             toInputStream().use { inputStream ->
                 when {
-                    endsWith(".xls") || endsWith(".xlsx") -> xlsImporter.generate(inputStream, defaultLocale)
+                    endsWith(".xls") || endsWith(".xlsx") -> xlsImporter.generate(inputStream, config)
                     else -> throw UnsupportedOperationException("Source file `$this` is not supported")
                 }
             }

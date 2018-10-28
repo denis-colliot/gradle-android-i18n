@@ -41,17 +41,18 @@ abstract class AbstractImporter(private val project: Project) {
      * @param inputStream The source input stream.
      * @param defaultLocale The default locale.
      */
-    fun generate(inputStream: InputStream, defaultLocale: String) {
-        generate(inputStream, ImportHandler(project, defaultLocale))
+    fun generate(inputStream: InputStream, config: ImportConfig) {
+        generate(inputStream, config, ImportHandler(project, config.defaultLocale))
     }
 
     /**
      * Generates the `xml` android string resources file(s) from given source input stream.
      *
      * @param inputStream The source input stream.
+     * @param config The import task configuration.
      * @param handler The import handler providing necessary methods to complete import task.
      */
-    protected abstract fun generate(inputStream: InputStream, handler: ImportHandler)
+    protected abstract fun generate(inputStream: InputStream, config: ImportConfig, handler: ImportHandler)
 
     /**
      * Import handler providing necessary methods to complete import task.

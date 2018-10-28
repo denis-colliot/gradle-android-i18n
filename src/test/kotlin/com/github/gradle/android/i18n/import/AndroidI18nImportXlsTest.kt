@@ -13,19 +13,25 @@ import java.io.FileInputStream
  */
 class AndroidI18nImportXlsTest : AbstractAndroidI18nImportTest() {
 
-    private val xlsResource = resource("/input.xls")
+    private val xlsResource = resource("/xls-import/input.xls")
 
     @Test
     fun `should use 'FileInputStream' when importing i18n resources from xls source`() {
         with(mock<XlsImporter>()) {
             AndroidI18nPluginExtension(mock(), this).apply {
                 sourceFile = xlsResource.path
+                importAllSheets = true
+                importSheetNameRegex = "^input\\d$"
                 importI18nResources()
             }
 
             verify(this, times(1)).generate(
                     isA<FileInputStream>(),
-                    eq("en"))
+                    check {
+                        assertThat(it.defaultLocale).isEqualTo("en")
+                        assertThat(it.allSheets).isTrue()
+                        assertThat(it.sheetNameRegex.pattern).isEqualTo("^input\\d$")
+                    })
         }
     }
 
@@ -33,6 +39,8 @@ class AndroidI18nImportXlsTest : AbstractAndroidI18nImportTest() {
     fun `should import i18n resources from local xls source`() {
         extension().apply {
             sourceFile = xlsResource.path
+            importAllSheets = true
+            importSheetNameRegex = "^input\\d$"
             importI18nResources()
         }
 
@@ -46,6 +54,8 @@ class AndroidI18nImportXlsTest : AbstractAndroidI18nImportTest() {
 
         val extension = extension().apply {
             sourceFile = xlsResource.path
+            importAllSheets = true
+            importSheetNameRegex = "^input\\d$"
         }
 
         // Runnint import a first time.
