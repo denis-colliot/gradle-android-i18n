@@ -1,6 +1,6 @@
 package com.github.gradle.android.i18n.model
 
-import org.junit.Assert.*
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import testutil.AbstractUnitTest
 
@@ -11,56 +11,59 @@ class XmlResourceTest : AbstractUnitTest() {
 
     @Test
     fun `should initialize resource properly`() {
-        XmlResource().let { xmlResource ->
-            assertNotNull(xmlResource)
-            assertNull(xmlResource.name)
-            assertNull(xmlResource.quantity)
-            assertNull(xmlResource.text)
+        with(XmlResource()) {
+            assertThat(this).isNotNull
+            assertThat(name).isNull()
+            assertThat(quantity).isNull()
+            assertThat(text).isNull()
         }
 
-        XmlResource(name = "dumb_name").let { xmlResource ->
-            assertNotNull(xmlResource)
-            assertEquals("dumb_name", xmlResource.name)
-            assertNull(xmlResource.quantity)
-            assertNull(xmlResource.text)
+        with(XmlResource(name = "dumb_name")) {
+            assertThat(this).isNotNull
+            assertThat(name).isEqualTo("dumb_name")
+            assertThat(quantity).isNull()
+            assertThat(text).isNull()
         }
 
-        XmlResource(quantity = "dumb_quantity", text = "dumb text").let { xmlResource ->
-            assertNotNull(xmlResource)
-            assertNull(xmlResource.name)
-            assertEquals("dumb_quantity", xmlResource.quantity)
-            assertEquals("dumb text", xmlResource.text)
+        with(XmlResource(quantity = "dumb_quantity", text = "dumb text")) {
+            assertThat(this).isNotNull
+            assertThat(name).isNull()
+            assertThat(quantity).isEqualTo("dumb_quantity")
+            assertThat(text).isEqualTo("dumb text")
         }
 
-        XmlResource(name = "dumb_name", quantity = "dumb_quantity", text = "dumb text").let { xmlResource ->
-            assertNotNull(xmlResource)
-            assertEquals("dumb_name", xmlResource.name)
-            assertEquals("dumb_quantity", xmlResource.quantity)
-            assertEquals("dumb text", xmlResource.text)
+        with(XmlResource(name = "dumb_name", quantity = "dumb_quantity", text = "dumb text")) {
+            assertThat(this).isNotNull
+            assertThat(name).isEqualTo("dumb_name")
+            assertThat(quantity).isEqualTo("dumb_quantity")
+            assertThat(text).isEqualTo("dumb text")
         }
     }
 
     @Test
     fun `should read item with text`() {
-        val res = readFile<XmlResource>("/item.xml")
-        assertNull(res.name)
-        assertNull(res.quantity)
-        assertEquals("Proin dui metus", res.text)
+        with(readFile<XmlResource>("/item.xml")) {
+            assertThat(name).isNull()
+            assertThat(quantity).isNull()
+            assertThat(text).isEqualTo("Proin dui metus")
+        }
     }
 
     @Test
     fun `should read string with text name`() {
-        val res = readFile<XmlResource>("/string.xml")
-        assertEquals("toto", res.name)
-        assertNull(res.quantity)
-        assertEquals("Lorem Ipsum", res.text)
+        with(readFile<XmlResource>("/string.xml")) {
+            assertThat(name).isEqualTo("toto")
+            assertThat(quantity).isNull()
+            assertThat(text).isEqualTo("Lorem Ipsum")
+        }
     }
 
     @Test
     fun `should read item with text quantity`() {
-        val res = readFile<XmlResource>("/item-quantity.xml")
-        assertNull(res.name)
-        assertEquals("one", res.quantity)
-        assertEquals("Nullam a felis", res.text)
+        with(readFile<XmlResource>("/item-quantity.xml")) {
+            assertThat(name).isNull()
+            assertThat(quantity).isEqualTo("one")
+            assertThat(text).isEqualTo("Nullam a felis")
+        }
     }
 }

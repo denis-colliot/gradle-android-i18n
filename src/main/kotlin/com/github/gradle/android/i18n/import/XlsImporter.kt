@@ -10,15 +10,15 @@ import java.io.InputStream
  */
 class XlsImporter(project: Project) : AbstractImporter(project) {
 
-    override fun generate(inputStream: InputStream, handler: ImportHandler) {
+    override fun generate(inputStream: InputStream, config: ImportConfig, handler: ImportHandler) {
 
         /**
          * Map storing each locale to its corresponding column index.
          */
         val localizedColumns = mutableMapOf<Int, String>()
 
-        readInput(inputStream) { row ->
-            if (row.rowNum == 0) {
+        readInput(inputStream, config) { row, readLocales ->
+            if (readLocales && row.rowNum == 0) {
                 // Reading locales row and initializing `StringResources`.
                 row.cellIterator()
                         .asSequence()
@@ -29,7 +29,7 @@ class XlsImporter(project: Project) : AbstractImporter(project) {
                             handler.addLocale(locale)
                             localizedColumns[cell.columnIndex] = locale
                         }
-            } else {
+            } else if (row.rowNum > 0) {
                 // Reading other data row.
                 val key = row.getCell(0)?.stringCellValue
 
@@ -44,10 +44,21 @@ class XlsImporter(project: Project) : AbstractImporter(project) {
         handler.writeOutput()
     }
 
-    private fun readInput(inputStream: InputStream, consumer: (Row) -> Unit) {
-        WorkbookFactory.create(inputStream).use {
-            // We assume there is only one sheet.
-            it.getSheetAt(0).forEach(consumer)
+    private fun readInput(inputStream: InputStream, config: ImportConfig, consumer: (Row, Boolean) -> Unit) {
+        var readLocales = true
+        WorkbookFactory.create(inputStream).forEachIndexed { index, sheet ->
+            when {
+                config.allSheets -> if (config.sheetNameRegex.matches(sheet.sheetName)) {
+                    // All sheets matching name regex.
+                    sheet.forEach { consumer(it, readLocales) }
+                    readLocales = false
+                }
+
+                else -> if (index == 0) {
+                    // Only first sheet.
+                    sheet.forEach { consumer(it, true) }
+                }
+            }
         }
     }
 }

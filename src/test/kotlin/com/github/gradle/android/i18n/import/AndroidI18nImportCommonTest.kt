@@ -71,6 +71,7 @@ class AndroidI18nImportCommonTest : AbstractAndroidI18nImportTest() {
         Assertions.assertThatExceptionOfType(IllegalArgumentException::class.java).isThrownBy {
             extension().apply {
                 sourceFile = resource("/input_with_duplicated_key.xls").path
+                importAllSheets = true // Duplicated key is in second sheet
                 importI18nResources()
             }
         }

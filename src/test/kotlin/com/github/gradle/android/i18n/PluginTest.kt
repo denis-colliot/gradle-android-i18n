@@ -1,9 +1,8 @@
 package com.github.gradle.android.i18n
 
+import org.assertj.core.api.Assertions.assertThat
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
-import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import testutil.AbstractUnitTest
@@ -23,8 +22,8 @@ class PluginTest : AbstractUnitTest() {
 
     @Test
     fun `should initialize plugin extension & tasks`() {
-        assertTrue(project.extensions.getByName("androidI18n") is AndroidI18nPluginExtension)
-        assertNotNull(project.tasks.getByName("androidI18nImport"))
-        assertNotNull(project.tasks.getByName("androidI18nExport"))
+        assertThat(project.extensions.getByName("androidI18n")).isInstanceOf(AndroidI18nPluginExtension::class.java)
+        assertThat(project.tasks.getByName("androidI18nImport")).isNotNull()
+        assertThat(project.tasks.getByName("androidI18nExport")).isNotNull()
     }
 }

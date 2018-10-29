@@ -1,6 +1,6 @@
 package com.github.gradle.android.i18n.model
 
-import org.junit.Assert.*
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import testutil.AbstractUnitTest
 
@@ -11,54 +11,56 @@ class XmlResourcesTest : AbstractUnitTest() {
 
     @Test
     fun `should read plurals`() {
-        val res = readFile<XmlResources>("/plurals.xml")
+        with(readFile<XmlResources>("/plurals.xml")) {
 
-        assertEquals("number_of_songs", res.name)
+            assertThat(name).isEqualTo("number_of_songs")
 
-        assertNotNull(res.items)
-        assertEquals(3, res.items.size)
+            assertThat(items).isNotNull
+            assertThat(items.size).isEqualTo(3)
 
-        assertNotNull(res.items[0])
-        assertEquals("zero", res.items[0].quantity)
-        assertEquals("0 songs", res.items[0].text)
-        assertNull(res.items[0].name)
+            assertThat(items[0]).isNotNull
+            assertThat(items[0].quantity).isEqualTo("zero")
+            assertThat(items[0].text).isEqualTo("0 songs")
+            assertThat(items[0].name).isNull()
 
-        assertNotNull(res.items[1])
-        assertEquals("one", res.items[1].quantity)
-        assertEquals("1 song", res.items[1].text)
-        assertNull(res.items[1].name)
+            assertThat(items[1]).isNotNull
+            assertThat(items[1].quantity).isEqualTo("one")
+            assertThat(items[1].text).isEqualTo("1 song")
+            assertThat(items[1].name).isNull()
 
-        assertNotNull(res.items[2])
-        assertEquals("two", res.items[2].quantity)
-        assertEquals("2 songs", res.items[2].text)
-        assertNull(res.items[2].name)
+            assertThat(items[2]).isNotNull
+            assertThat(items[2].quantity).isEqualTo("two")
+            assertThat(items[2].text).isEqualTo("2 songs")
+            assertThat(items[2].name).isNull()
+        }
     }
 
     @Test
     fun `should read string array`() {
-        val res = readFile<XmlResources>("/string-array.xml")
+        with(readFile<XmlResources>("/string-array.xml")) {
 
-        assertNotNull(res.items)
-        assertEquals(4, res.items.size)
+            assertThat(items).isNotNull
+            assertThat(items.size).isEqualTo(4)
 
-        assertNotNull(res.items[0])
-        assertEquals("Mercury", res.items[0].text)
-        assertNull(res.items[0].quantity)
-        assertNull(res.items[0].name)
+            assertThat(items[0]).isNotNull
+            assertThat(items[0].text).isEqualTo("Mercury")
+            assertThat(items[0].quantity).isNull()
+            assertThat(items[0].name).isNull()
 
-        assertNotNull(res.items[1])
-        assertEquals("Venus", res.items[1].text)
-        assertNull(res.items[1].quantity)
-        assertNull(res.items[1].name)
+            assertThat(items[1]).isNotNull
+            assertThat(items[1].text).isEqualTo("Venus")
+            assertThat(items[1].quantity).isNull()
+            assertThat(items[1].name).isNull()
 
-        assertNotNull(res.items[2])
-        assertEquals("Earth", res.items[2].text)
-        assertNull(res.items[2].quantity)
-        assertNull(res.items[2].name)
+            assertThat(items[2]).isNotNull
+            assertThat(items[2].text).isEqualTo("Earth")
+            assertThat(items[2].quantity).isNull()
+            assertThat(items[2].name).isNull()
 
-        assertNotNull(res.items[3])
-        assertEquals("Mars", res.items[3].text)
-        assertNull(res.items[3].quantity)
-        assertNull(res.items[3].name)
+            assertThat(items[3]).isNotNull
+            assertThat(items[3].text).isEqualTo("Mars")
+            assertThat(items[3].quantity).isNull()
+            assertThat(items[3].name).isNull()
+        }
     }
 }

@@ -1,6 +1,6 @@
 package com.github.gradle.android.i18n.model
 
-import org.junit.Assert.*
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import testutil.AbstractUnitTest
 
@@ -11,49 +11,50 @@ class StringResourcesTest : AbstractUnitTest() {
 
     @Test
     fun `should read strings resources`() {
-        val res = readFile<StringResources>("/strings.xml")
+        with(readFile<StringResources>("/strings.xml")) {
 
-        // Default values.
-        assertEquals("", res.locale)
-        assertFalse(res.defaultLocale)
+            // Default values.
+            assertThat(locale).isEqualTo("")
+            assertThat(defaultLocale).isFalse()
 
-        // Strings.
-        assertNotNull(res.strings)
-        assertEquals(3, res.strings.size)
+            // Strings.
+            assertThat(strings).isNotNull
+            assertThat(strings.size).isEqualTo(3)
 
-        assertNotNull(res.strings[0])
-        assertEquals("string_1", res.strings[0].name)
-        assertEquals("Lorem ipsum dolor sit amet", res.strings[0].text)
-        assertNull(res.strings[0].quantity)
+            assertThat(strings[0]).isNotNull
+            assertThat(strings[0].name).isEqualTo("string_1")
+            assertThat(strings[0].text).isEqualTo("Lorem ipsum dolor sit amet")
+            assertThat(strings[0].quantity).isNull()
 
-        assertNotNull(res.strings[1])
-        assertEquals("string_2", res.strings[1].name)
-        assertEquals("Mauris molestie mi felis", res.strings[1].text)
-        assertNull(res.strings[1].quantity)
+            assertThat(strings[1]).isNotNull
+            assertThat(strings[1].name).isEqualTo("string_2")
+            assertThat(strings[1].text).isEqualTo("Mauris molestie mi felis")
+            assertThat(strings[1].quantity).isNull()
 
-        assertNotNull(res.strings[2])
-        assertEquals("Donec cursus nisi eu semper", res.strings[2].text)
-        assertEquals("string_3", res.strings[2].name)
-        assertNull(res.strings[2].quantity)
+            assertThat(strings[2]).isNotNull
+            assertThat(strings[2].text).isEqualTo("Donec cursus nisi eu semper")
+            assertThat(strings[2].name).isEqualTo("string_3")
+            assertThat(strings[2].quantity).isNull()
 
-        // Plurals.
-        assertNotNull(res.plurals)
-        assertEquals(2, res.plurals.size)
+            // Plurals.
+            assertThat(plurals).isNotNull
+            assertThat(plurals.size).isEqualTo(2)
 
-        assertNotNull(res.plurals[0])
-        assertEquals("plural_a", res.plurals[0].name)
-        assertNotNull(res.plurals[0].items)
-        assertEquals(1, res.plurals[0].items.size)
-        assertNull(res.plurals[0].items[0].name)
-        assertEquals("other", res.plurals[0].items[0].quantity)
-        assertEquals("Other of A", res.plurals[0].items[0].text)
+            assertThat(plurals[0]).isNotNull
+            assertThat(plurals[0].name).isEqualTo("plural_a")
+            assertThat(plurals[0].items).isNotNull
+            assertThat(plurals[0].items.size).isEqualTo(1)
+            assertThat(plurals[0].items[0].name).isNull()
+            assertThat(plurals[0].items[0].quantity).isEqualTo("other")
+            assertThat(plurals[0].items[0].text).isEqualTo("Other of A")
 
-        assertNotNull(res.plurals[1])
-        assertEquals("plural_b", res.plurals[1].name)
-        assertNotNull(res.plurals[1].items)
-        assertEquals(1, res.plurals[1].items.size)
-        assertNull(res.plurals[1].items[0].name)
-        assertEquals("other", res.plurals[1].items[0].quantity)
-        assertEquals("Other of B", res.plurals[1].items[0].text)
+            assertThat(plurals[1]).isNotNull
+            assertThat(plurals[1].name).isEqualTo("plural_b")
+            assertThat(plurals[1].items).isNotNull
+            assertThat(plurals[1].items.size).isEqualTo(1)
+            assertThat(plurals[1].items[0].name).isNull()
+            assertThat(plurals[1].items[0].quantity).isEqualTo("other")
+            assertThat(plurals[1].items[0].text).isEqualTo("Other of B")
+        }
     }
 }

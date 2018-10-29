@@ -40,9 +40,9 @@ abstract class AbstractAndroidI18nImportTest : AbstractUnitTest() {
             actualEsFile = Paths.get(this, "src", "main", "res", "values-es", "strings.xml").toFile()
         }
 
-        expectedEnFile = File(resource("/en_strings.xml").path)
-        expectedFrFile = File(resource("/fr_strings.xml").path)
-        expectedEsFile = File(resource("/es_strings.xml").path)
+        expectedEnFile = File(resource("/xls-import/en_strings.xml").path)
+        expectedFrFile = File(resource("/xls-import/fr_strings.xml").path)
+        expectedEsFile = File(resource("/xls-import/es_strings.xml").path)
     }
 
     protected fun extension(): AndroidI18nPluginExtension {
