@@ -39,7 +39,7 @@ abstract class AbstractImporter(private val project: Project) {
      * Generates the `xml` android string resources file(s) from given source input stream.
      *
      * @param inputStream The source input stream.
-     * @param defaultLocale The default locale.
+     * @param config The import configuration.
      */
     fun generate(inputStream: InputStream, config: ImportConfig) {
         generate(inputStream, config, ImportHandler(project, config.defaultLocale))
@@ -83,7 +83,7 @@ abstract class AbstractImporter(private val project: Project) {
             if (locale.isNullOrBlank()) {
                 throw IllegalArgumentException("Invalid locale value: `$locale`")
             }
-            with(locale!!.trim()) {
+            with(locale.trim()) {
                 stringResources[this] = StringResources(this, this == defaultLocale.trim())
             }
         }
@@ -139,18 +139,18 @@ abstract class AbstractImporter(private val project: Project) {
          * - `src/main/res/values-<locale>` (*one for each other supported locale*)
          */
         fun writeOutput() {
-            stringResources.values.forEach {
+            stringResources.values.forEach { resources ->
 
-                val outputFile = androidStringsResFile(it)
+                val outputFile = androidStringsResFile(resources)
 
                 if (!outputFile.parentFile.exists()) {
                     outputFile.parentFile.mkdirs()
                 }
 
-                it.strings.sortBy { it.name }
-                it.plurals.sortBy { it.name }
+                resources.strings.sortBy { it.name }
+                resources.plurals.sortBy { it.name }
 
-                xmlMapper.writeValue(outputFile, it)
+                xmlMapper.writeValue(outputFile, resources)
             }
         }
 
@@ -210,7 +210,7 @@ abstract class AbstractImporter(private val project: Project) {
          * - contains invalid characters (see [XML_KEY_ILLEGAL_CHARS]).
          */
         private fun isInvalidKey(key: String?): Boolean {
-            return key.isNullOrBlank() || XML_KEY_ILLEGAL_CHARS.containsMatchIn(key!!.trim())
+            return key.isNullOrBlank() || XML_KEY_ILLEGAL_CHARS.containsMatchIn(key.trim())
         }
 
         /**
