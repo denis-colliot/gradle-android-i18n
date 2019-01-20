@@ -5,7 +5,7 @@ import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThatExceptionOfType
 import org.junit.Test
 import java.io.FileNotFoundException
 
@@ -48,7 +48,7 @@ class AndroidI18nImportCommonTest : AbstractAndroidI18nImportTest() {
 
     @Test
     fun `should fail when importing i18n resources with an unexisting file`() {
-        Assertions.assertThatExceptionOfType(FileNotFoundException::class.java).isThrownBy {
+        assertThatExceptionOfType(FileNotFoundException::class.java).isThrownBy {
             extension().apply {
                 sourceFile = "unexisting_file.xls"
                 importI18nResources()
@@ -58,7 +58,7 @@ class AndroidI18nImportCommonTest : AbstractAndroidI18nImportTest() {
 
     @Test
     fun `should fail when importing i18n resources with an unsupported file type`() {
-        Assertions.assertThatExceptionOfType(UnsupportedOperationException::class.java).isThrownBy {
+        assertThatExceptionOfType(UnsupportedOperationException::class.java).isThrownBy {
             extension().apply {
                 sourceFile = resource("/input.unsupported").path
                 importI18nResources()
@@ -68,7 +68,7 @@ class AndroidI18nImportCommonTest : AbstractAndroidI18nImportTest() {
 
     @Test
     fun `should fail when importing i18n resources with duplicated key`() {
-        Assertions.assertThatExceptionOfType(IllegalArgumentException::class.java).isThrownBy {
+        assertThatExceptionOfType(IllegalArgumentException::class.java).isThrownBy {
             extension().apply {
                 sourceFile = resource("/input_with_duplicated_key.xls").path
                 importAllSheets = true // Duplicated key is in second sheet
@@ -79,7 +79,7 @@ class AndroidI18nImportCommonTest : AbstractAndroidI18nImportTest() {
 
     @Test
     fun `should fail when importing i18n resources with missing key`() {
-        Assertions.assertThatExceptionOfType(IllegalArgumentException::class.java).isThrownBy {
+        assertThatExceptionOfType(IllegalArgumentException::class.java).isThrownBy {
             extension().apply {
                 sourceFile = resource("/input_with_missing_key.xls").path
                 importI18nResources()
