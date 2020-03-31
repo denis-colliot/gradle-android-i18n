@@ -1,5 +1,6 @@
 package com.github.gradle.android.i18n
 
+import com.github.gradle.android.i18n.connector.HttpsConnector
 import com.github.gradle.android.i18n.import.ImportConfig
 import com.github.gradle.android.i18n.import.XlsImporter
 import jcifs.smb.SmbFile
@@ -90,6 +91,9 @@ open class AndroidI18nPluginExtension(
                 // Samba URI.
                 setJcifsProperties()
                 SmbFile(sourceFile).inputStream
+            }
+            sourceFile.startsWith("https://") -> {
+                HttpsConnector(sourceFile).inputStream
             }
             else -> {
                 // Default case.
