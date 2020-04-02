@@ -39,7 +39,7 @@ An empty (or blank) `sourceFile` simply disabled plugin execution (convenient fo
 
 # Supported sources
 
-## Supported URI 
+## Supported URI
 
 ### Samba URI
 Pattern: `smb://<domain>;<login>:<password>@<host>/<path_to_file>`
@@ -58,7 +58,7 @@ Pattern: `\\<host>\<path_to_file>`
 
 
 ## Supported file types
-For the moment, the plugin only supports `.xls` source file type. It must respect following structure:
+For the moment, the plugin only supports `.xls` and `.xlsx` source file types. Files must respect following structure:
 
 | key | fr | en | es |
 |-----|----|----|----|
@@ -66,3 +66,25 @@ For the moment, the plugin only supports `.xls` source file type. It must respec
 | home_text_2 | Avec un argument : # | With an argument: # | Con un argumento : # |
 | plurals_key:one | Voiture | Car | Coche |
 | plurals_key:other | Voitures | Cars | Coches |
+
+
+# Publish plugin to the Gradle Plugin Portal
+
+## Official guide
+
+https://guides.gradle.org/publishing-plugins-to-gradle-plugin-portal/
+
+## TL;DR
+
+The following configuration should be set in your `~/.gradle/gradle.properties` file:
+
+```shell script
+gradle.publish.key=<api_key>
+gradle.publish.secret=<secret>
+```
+
+Then simply run following command:
+
+```shell script
+$ ./gradlew publishPlugins
+```
