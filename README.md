@@ -88,3 +88,25 @@ Then simply run following command:
 ```shell script
 $ ./gradlew publishPlugins
 ```
+
+# Develop
+
+To make changes to this plugin and test them in your project, you can use Gradle's composite build feature:
+
+1. Clone this repository
+
+2. Add this to `settings.gradle` in your project:
+
+    ```groovy
+    includeBuild('/path/to/gradle-android-i18n') {
+        dependencySubstitution {
+            substitute module("gradle.plugin.com.github.gradle:android-i18n") with project(':')
+        }
+    }
+    ```
+3. Now you can launch the `androidI18nImport` as usual from your project:
+
+    ```shell script
+    cd /path/to/your/project
+    ./gradlew app:androidI18nImport
+    ```
