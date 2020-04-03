@@ -1,5 +1,6 @@
 package com.github.gradle.android.i18n.export
 
+import org.apache.poi.ss.usermodel.CellCopyPolicy
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.gradle.api.Project
 import java.io.OutputStream
@@ -24,6 +25,8 @@ class XlsExporter(project: Project) : AbstractExporter(project) {
                 headerLocaleCell.setCellValue(stringResources.locale)
             }
         }
+
+        workbook.write(outputStream)
     }
 
     private fun mapToRows(defaultLocale: String) {
