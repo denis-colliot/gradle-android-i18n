@@ -28,7 +28,7 @@ abstract class AbstractExporter(private val project: Project) {
                 .maxDepth(1)
                 .filter { it.isDirectory && resFolderPattern.matches(it.name) }
                 .forEach {
-                    val locale = resFolderPattern.matchEntire(it.name)!!.groupValues[1]
+                    val locale = resFolderPattern.matchEntire(it.name)!!.groupValues[2]
                     val resourcesFile = it.walkTopDown().maxDepth(1).first { it.name == "strings.xml" }
                     val stringResources = xmlMapper.readValue<StringResources>(resourcesFile.inputStream())
 
