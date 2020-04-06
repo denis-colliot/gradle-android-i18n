@@ -41,26 +41,26 @@ class XlsExporter(project: Project) : AbstractExporter(project) {
             stringResources.strings.forEach {
                 val key = it.name ?: ""
                 val value = it.text ?: ""
-                if (!rows.containsKey(key)) {
-                    rows[key] = mutableListOf(value)
-                } else {
-                    rows[key]?.add(value)
-                }
+                rows.putItem(key, value)
             }
 
             stringResources.plurals.forEach { plural ->
                 plural.items.forEach { pluralItem ->
                     val key = "${plural.name}:${pluralItem.quantity}"
                     val value = pluralItem.text ?: ""
-                    if (!rows.containsKey(key)) {
-                        rows[key] = mutableListOf(value)
-                    } else {
-                        rows[key]?.add(value)
-                    }
+                    rows.putItem(key, value)
                 }
             }
         }
 
         return rows
+    }
+}
+
+private fun <K, V> MutableMap<K, MutableList<V>>.putItem(key: K, value: V) {
+    if (!this.containsKey(key)) {
+        this[key] = mutableListOf(value)
+    } else {
+        this[key]?.add(value)
     }
 }
