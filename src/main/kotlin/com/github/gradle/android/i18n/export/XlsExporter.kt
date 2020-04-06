@@ -1,6 +1,5 @@
 package com.github.gradle.android.i18n.export
 
-import org.apache.poi.ss.usermodel.CellCopyPolicy
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.gradle.api.Project
 import java.io.OutputStream
@@ -11,19 +10,16 @@ class XlsExporter(project: Project) : AbstractExporter(project) {
 
         // Workbook creation.
         val workbook = XSSFWorkbook()
-        val createHelper = workbook.creationHelper
+        // val createHelper = workbook.creationHelper
         val sheet = workbook.createSheet("android-i18n")
 
         // Header row.
         val headerRow = sheet.createRow(0)
+        val headerKeyCell = headerRow.createCell(0)
+        headerKeyCell.setCellValue("key")
         loadProjectResources(defaultLocale).forEachIndexed { index, stringResources ->
-            if (index == 0) {
-                val headerKeyCell = headerRow.createCell(index)
-                headerKeyCell.setCellValue("key")
-            } else {
-                val headerLocaleCell = headerRow.createCell(index)
-                headerLocaleCell.setCellValue(stringResources.locale)
-            }
+            val headerLocaleCell = headerRow.createCell(index + 1)
+            headerLocaleCell.setCellValue(stringResources.locale)
         }
 
         workbook.write(outputStream)
