@@ -47,8 +47,17 @@ class XlsExporter(project: Project) : AbstractExporter(project) {
                     rows[key]?.add(value)
                 }
             }
-            stringResources.plurals.forEach {
-                // TODO rows[it.name] = it.items.ma
+
+            stringResources.plurals.forEach { plural ->
+                plural.items.forEach { pluralItem ->
+                    val key = "${plural.name}:${pluralItem.quantity}"
+                    val value = pluralItem.text ?: ""
+                    if (!rows.containsKey(key)) {
+                        rows[key] = mutableListOf(value)
+                    } else {
+                        rows[key]?.add(value)
+                    }
+                }
             }
         }
 
