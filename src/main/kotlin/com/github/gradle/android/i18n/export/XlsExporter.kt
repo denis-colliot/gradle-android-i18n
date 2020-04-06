@@ -14,28 +14,44 @@ class XlsExporter(project: Project) : AbstractExporter(project) {
         val sheet = workbook.createSheet("android-i18n")
 
         // Header row.
-        val headerRow = sheet.createRow(0)
-        val headerKeyCell = headerRow.createCell(0)
-        headerKeyCell.setCellValue("key")
-        loadProjectResources(defaultLocale).forEachIndexed { index, stringResources ->
-            val headerLocaleCell = headerRow.createCell(index + 1)
-            headerLocaleCell.setCellValue(stringResources.locale)
+        mapToRows(defaultLocale).entries.forEachIndexed { entryIndex, row ->
+            val (key, values) = row
+            val sheetRow = sheet.createRow(entryIndex)
+            val keyCell = sheetRow.createCell(0)
+            keyCell.setCellValue(key)
+            values.forEachIndexed { valueIndex, valueText ->
+                val valueCell = sheetRow.createCell(valueIndex + 1)
+                valueCell.setCellValue(valueText)
+            }
         }
 
         workbook.write(outputStream)
     }
 
-    private fun mapToRows(defaultLocale: String) {
+    private fun mapToRows(defaultLocale: String): Map<String, List<String>> {
 
-        val rows = mutableMapOf<String, List<String>>()
+        val rows = mutableMapOf<String, MutableList<String>>()
 
-        loadProjectResources(defaultLocale).forEach { stringResources ->
+        val loadedResources = loadProjectResources(defaultLocale)
+
+        rows["key"] = loadedResources.map { it.locale }.toMutableList()
+
+        loadedResources.forEach { stringResources ->
+
             stringResources.strings.forEach {
-                rows[it.name ?: ""] = mutableListOf(it.text ?: "")
+                val key = it.name ?: ""
+                val value = it.text ?: ""
+                if (!rows.containsKey(key)) {
+                    rows[key] = mutableListOf(value)
+                } else {
+                    rows[key]?.add(value)
+                }
             }
             stringResources.plurals.forEach {
                 // TODO rows[it.name] = it.items.ma
             }
         }
+
+        return rows
     }
 }
