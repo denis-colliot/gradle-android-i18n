@@ -14,12 +14,12 @@ class XlsExporter(project: Project) : AbstractExporter(project) {
         val sheet = workbook.createSheet("android-i18n")
 
         // Header row.
-        mapToRows(defaultLocale).entries.forEachIndexed { entryIndex, row ->
-            val (key, values) = row
+        mapToRows(defaultLocale).entries.forEachIndexed { entryIndex, entryRow ->
+            val (entryKey, entryValues) = entryRow
             val sheetRow = sheet.createRow(entryIndex)
             val keyCell = sheetRow.createCell(0)
-            keyCell.setCellValue(key)
-            values.forEachIndexed { valueIndex, valueText ->
+            keyCell.setCellValue(entryKey)
+            entryValues.forEachIndexed { valueIndex, valueText ->
                 val valueCell = sheetRow.createCell(valueIndex + 1)
                 valueCell.setCellValue(valueText)
             }
