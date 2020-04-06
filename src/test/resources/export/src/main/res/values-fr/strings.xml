@@ -1015,6 +1015,15 @@ de perte / vol au plus vite.\n\nRendez-vous sur le site Navigo pour effectuer le
     <string name="ticketing_write_card_loading_phone">Chargement du titre de transport sur votre téléphone</string>
     <string name="ticketing_write_card_title">Chargement</string>
     <string name="ticketing_write_card_wait">Patientez quelques instants…</string>
+
+    <string name="go_to_twitter_btn">Voir \@%s</string>
+    <string name="twitter_alias">\@%s</string>
+    <string name="tweet_publish_date_less_than_1_hour">il y a %dm</string>
+    <string name="tweet_publish_date_less_than_24_hours">il y a %dh</string>
+    <string name="home_card_traffic_info_message_no_data_and_twitter_disabled">L\'info trafic est actuellement
+        indisponible.</string>
+    <string name="tweet_publish_date_more_than_24_hours">il y a %dj</string>
+
     <plurals name="bookmark_stations_txt_stations_not_available">
         <item quantity="one">Cette ligne ne peut pas être sauvegardée.</item>
         <item quantity="other">Ces lignes ne peuvent pas être sauvegardées.</item>
@@ -1052,11 +1061,4 @@ de perte / vol au plus vite.\n\nRendez-vous sur le site Navigo pour effectuer le
         <item quantity="one">(%d restante)</item>
     </plurals>
 
-    <string name="go_to_twitter_btn">Voir \@%s</string>
-    <string name="twitter_alias">\@%s</string>
-    <string name="tweet_publish_date_less_than_1_hour">il y a %dm</string>
-    <string name="tweet_publish_date_less_than_24_hours">il y a %dh</string>
-    <string name="home_card_traffic_info_message_no_data_and_twitter_disabled">L\'info trafic est actuellement
-        indisponible.</string>
-    <string name="tweet_publish_date_more_than_24_hours">il y a %dj</string>
 </resources>

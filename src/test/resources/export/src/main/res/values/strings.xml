@@ -1011,6 +1011,14 @@ loss / theft as soon as possible.\n\nGo to the Navigo website to take the necess
     <string name="ticketing_write_card_loading_phone">Load the ticket on your phone</string>
     <string name="ticketing_write_card_title">Loading</string>
     <string name="ticketing_write_card_wait">Wait a few moments…</string>
+
+    <string name="go_to_twitter_btn">See \@%s</string>
+    <string name="twitter_alias">\@%s</string>
+    <string name="tweet_publish_date_less_than_1_hour">%dm ago</string>
+    <string name="tweet_publish_date_less_than_24_hours">%dh ago</string>
+    <string name="home_card_traffic_info_message_no_data_and_twitter_disabled">Traffic info is currently unavailable.</string>
+    <string name="tweet_publish_date_more_than_24_hours">%dd ago</string>
+
     <plurals name="bookmark_stations_txt_stations_not_available">
         <item quantity="one">This line cannot be saved.</item>
         <item quantity="other">These lines cannot be saved.</item>
@@ -1047,12 +1055,5 @@ loss / theft as soon as possible.\n\nGo to the Navigo website to take the necess
         <item quantity="other">(%d left)</item>
         <item quantity="one">(%d left)</item>
     </plurals>
-
-    <string name="go_to_twitter_btn">See \@%s</string>
-    <string name="twitter_alias">\@%s</string>
-    <string name="tweet_publish_date_less_than_1_hour">%dm ago</string>
-    <string name="tweet_publish_date_less_than_24_hours">%dh ago</string>
-    <string name="home_card_traffic_info_message_no_data_and_twitter_disabled">Traffic info is currently unavailable.</string>
-    <string name="tweet_publish_date_more_than_24_hours">%dd ago</string>
 </resources>
 
