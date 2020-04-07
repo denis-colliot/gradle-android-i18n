@@ -10,7 +10,6 @@ class XlsExporter(project: Project) : AbstractExporter(project) {
 
         // Workbook creation.
         val workbook = XSSFWorkbook()
-        // val createHelper = workbook.creationHelper
         val sheet = workbook.createSheet("android-i18n")
 
         // Header row.
