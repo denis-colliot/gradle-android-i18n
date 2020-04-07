@@ -1,19 +1,23 @@
 package com.github.gradle.android.i18n
 
+import com.github.gradle.android.i18n.export.XlsExporter
 import com.github.gradle.android.i18n.import.ImportConfig
 import com.github.gradle.android.i18n.import.XlsImporter
 import jcifs.smb.SmbFile
 import org.gradle.api.Project
 import java.io.File
 import java.io.FileNotFoundException
+import java.io.FileOutputStream
 import java.io.InputStream
+import java.nio.file.Paths
 
 /**
  * [AndroidI18nPlugin] extension.
  */
 open class AndroidI18nPluginExtension(
-        private val project: Project,
-        private val xlsImporter: XlsImporter
+    private val project: Project,
+    private val xlsImporter: XlsImporter,
+    private val xlsExporter: XlsExporter
 ) {
 
     /**
@@ -78,7 +82,12 @@ open class AndroidI18nPluginExtension(
      * Exports the project android i18n resources to an output file.
      */
     fun exportI18nResources() {
-        TODO()
+        val basePath = Paths.get(sourceFile).fileName.toString()
+        val outputFile = File(project.buildDir, basePath)
+        val outputStream = FileOutputStream(outputFile)
+        xlsExporter.export(outputStream, defaultLocale)
+        outputStream.close()
+        println("Resources were exported to: ${outputFile.path}")
     }
 
     /**
