@@ -23,25 +23,26 @@ abstract class AbstractExporter(private val project: Project) {
 
         val resources = mutableListOf<StringResources>()
 
-        Paths.get(project.projectDir.absolutePath, "src", "main", "res").toFile()
-                .walkTopDown()
-                .maxDepth(1)
-                .filter { it.isDirectory && resFolderPattern.matches(it.name) }
-                .forEach {
-                    val locale = resFolderPattern.matchEntire(it.name)!!.groupValues[2]
-                    val resourcesFile = it.walkTopDown().maxDepth(1).first { it.name == "strings.xml" }
-                    val stringResources = xmlMapper.readValue<StringResources>(resourcesFile.inputStream())
+        Paths.get(project.projectDir.absolutePath, "src", "main", "res")
+            .toFile()
+            .walkTopDown()
+            .maxDepth(1)
+            .filter { it.isDirectory && resFolderPattern.matches(it.name) }
+            .forEach { directory ->
+                val locale = resFolderPattern.matchEntire(directory.name)!!.groupValues[2]
+                val resourcesFile = directory.walkTopDown().maxDepth(1).first { file -> file.name == "strings.xml" }
+                val stringResources = xmlMapper.readValue<StringResources>(resourcesFile.inputStream())
 
-                    if (locale.isBlank()) {
-                        stringResources.locale = defaultLocale
-                        stringResources.defaultLocale = true
-                    } else {
-                        stringResources.locale = locale
-                        stringResources.defaultLocale = false
-                    }
-
-                    resources.add(stringResources)
+                if (locale.isBlank()) {
+                    stringResources.locale = defaultLocale
+                    stringResources.defaultLocale = true
+                } else {
+                    stringResources.locale = locale
+                    stringResources.defaultLocale = false
                 }
+
+                resources.add(stringResources)
+            }
 
         return resources
     }
