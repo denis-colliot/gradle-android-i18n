@@ -40,14 +40,14 @@ class XlsExporter(project: Project) : AbstractExporter(project) {
 
             stringResources.strings.forEach {
                 val key = it.name ?: ""
-                val value = it.text ?: ""
+                val value = it.text.unescapeQuotes ?: ""
                 rows.putItem(key, value)
             }
 
             stringResources.plurals.forEach { plural ->
                 plural.items.forEach { pluralItem ->
                     val key = "${plural.name}:${pluralItem.quantity}"
-                    val value = pluralItem.text ?: ""
+                    val value = pluralItem.text.unescapeQuotes ?: ""
                     rows.putItem(key, value)
                 }
             }
@@ -64,3 +64,8 @@ private fun <K, V> MutableMap<K, MutableList<V>>.putItem(key: K, value: V) {
         this[key]?.add(value)
     }
 }
+
+private val String?.unescapeQuotes: String?
+    get() {
+        return this?.replace("\\'", "'")
+    }
