@@ -15,12 +15,12 @@ The plugin provides the following gradle tasks:
 - **`androidI18nExport`**: export the android resources for all locales to a XLSX file in the `build` directory of the current module. The path of the generated XLSX file is displayed in the build output:
 
     ```
-./gradlew app:androidI18nExport
-[...]
-> Task :app:androidI18nExport
-Resources were exported to:
-/path/to/app/build/i18n.xlsx
-[...]
+    ./gradlew app:androidI18nExport
+    [...]
+    > Task :app:androidI18nExport
+    Resources were exported to:
+    /path/to/app/build/i18n.xlsx
+    [...]
     ```
 
 
