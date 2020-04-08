@@ -28,6 +28,7 @@ abstract class AbstractExporter(private val project: Project) {
             .walkTopDown()
             .maxDepth(1)
             .filter { it.isDirectory && resFolderPattern.matches(it.name) }
+            .sortedBy { it.path }
             .forEach { directory ->
                 val locale = resFolderPattern.matchEntire(directory.name)!!.groupValues[2]
                 val resourcesFile = directory.walkTopDown().maxDepth(1).first { file -> file.name == "strings.xml" }
