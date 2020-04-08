@@ -87,7 +87,7 @@ open class AndroidI18nPluginExtension(
         val outputStream = FileOutputStream(outputFile)
         xlsExporter.export(outputStream, defaultLocale)
         outputStream.close()
-        println("Resources were exported to: ${outputFile.path}")
+        println("Resources were exported to:\n${outputFile.path}")
     }
 
     /**
