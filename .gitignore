@@ -26,3 +26,9 @@ local.properties
 
 # Xls lock files.
 .~lock*
+
+# Generated native files
+/src/test/resources/export/userHome/native/jansi/null/osx/libjansi.jnilib
+/src/test/resources/export/userHome/native/30/osx-amd64/libnative-platform.dylib
+/src/test/resources/export/userHome/native/30/osx-amd64/libnative-platform.dylib.lock
+/src/test/resources/export_then_import/export/userHome/native/
