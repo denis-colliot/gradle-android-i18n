@@ -3,11 +3,17 @@ package com.github.gradle.android.i18n.export
 import org.apache.poi.ss.usermodel.WorkbookFactory
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Assert.assertEquals
+import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TemporaryFolder
 import java.io.File
 import java.io.FileOutputStream
 
 class XlsExporterTest {
+
+    @Rule
+    @JvmField
+    val temporaryFolder = TemporaryFolder()
 
     @Test
     fun `should export to xlsx`() {
@@ -16,7 +22,7 @@ class XlsExporterTest {
         val projectDir = File("src/test/resources/export")
         val project = ProjectBuilder.builder().withProjectDir(projectDir).build()
         val exporter = XlsExporter(project)
-        val outputFile = File.createTempFile("i18n", ".xlsx")
+        val outputFile = temporaryFolder.newFile("i18n.xlsx")
         val outputStream = FileOutputStream(outputFile)
 
         outputStream.let {
@@ -44,8 +50,6 @@ class XlsExporterTest {
             ),
             outputFile.toRows()
         )
-
-        outputFile.delete()
     }
 }
 

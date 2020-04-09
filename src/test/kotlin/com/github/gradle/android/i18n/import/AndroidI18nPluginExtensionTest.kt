@@ -18,6 +18,10 @@ import java.nio.file.Paths
  */
 class AndroidI18nPluginExtensionTest : AbstractUnitTest() {
 
+    @Rule
+    @JvmField
+    val temporaryFolder = TemporaryFolder()
+
     @Test
     fun `should use 'FileInputStream' when importing i18n resources from xls source`() {
         val xls2XmlGenerator = mock<XlsImporter>()
@@ -66,10 +70,6 @@ class AndroidI18nPluginExtensionTest : AbstractUnitTest() {
         }
     }
 
-    @Rule
-    @JvmField
-    val buildDirRule = TemporaryFolder()
-
     @Test
     fun `should export resources to output file`() {
 
@@ -80,7 +80,7 @@ class AndroidI18nPluginExtensionTest : AbstractUnitTest() {
         val extension = AndroidI18nPluginExtension(project, importer, exporter)
         extension.sourceFile = "/path/to/my-i18n-file.xlsx"
         extension.defaultLocale = "en"
-        val buildDir = buildDirRule.newFolder()
+        val buildDir = temporaryFolder.newFolder()
         given(project.buildDir).willReturn(buildDir)
 
         // When
