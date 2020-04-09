@@ -7,7 +7,6 @@ import jcifs.smb.SmbFile
 import org.gradle.api.Project
 import java.io.File
 import java.io.FileNotFoundException
-import java.io.FileOutputStream
 import java.io.InputStream
 import java.nio.file.Paths
 
@@ -88,10 +87,10 @@ open class AndroidI18nPluginExtension(
     fun exportI18nResources() {
         val basePath = Paths.get(sourceFile).fileName.toString()
         val outputFile = File(project.buildDir, basePath)
-        val outputStream = FileOutputStream(outputFile)
-        xlsExporter.export(outputStream, defaultLocale)
-        outputStream.close()
-        println("Resources were exported to:\n${outputFile.path}")
+        outputFile.outputStream().use { outputStream ->
+            xlsExporter.export(outputStream, defaultLocale)
+            println("Resources were exported to:\n${outputFile.path}")
+        }
     }
 
     /**
