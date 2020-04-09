@@ -46,3 +46,5 @@ abstract class AbstractExporter(private val project: Project) {
         return resources
     }
 }
+
+internal val String?.unescapeQuotes: String? get() = this?.replace("\\'", "'")

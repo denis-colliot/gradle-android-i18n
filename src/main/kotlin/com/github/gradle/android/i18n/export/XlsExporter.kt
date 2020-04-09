@@ -63,5 +63,3 @@ private fun <K, V> MutableMap<K, MutableList<V>>.putItem(key: K, value: V) {
         this[key]?.add(value)
     }
 }
-
-private val String?.unescapeQuotes: String? get() = this?.replace("\\'", "'")
