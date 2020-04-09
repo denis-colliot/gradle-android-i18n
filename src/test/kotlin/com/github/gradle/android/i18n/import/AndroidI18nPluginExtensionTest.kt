@@ -1,11 +1,17 @@
 package com.github.gradle.android.i18n.import
 
 import com.github.gradle.android.i18n.AndroidI18nPluginExtension
+import com.github.gradle.android.i18n.export.XlsExporter
 import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions.assertThat
+import org.gradle.api.Project
+import org.junit.Assert.assertTrue
+import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TemporaryFolder
 import testutil.AbstractUnitTest
 import java.io.FileInputStream
+import java.nio.file.Paths
 
 /**
  * Plugin extension tests regarding import task methods.
@@ -58,5 +64,30 @@ class AndroidI18nPluginExtensionTest : AbstractUnitTest() {
             }
             verify(importer, times(0)).generate(any(), any())
         }
+    }
+
+    @Rule
+    @JvmField
+    val buildDirRule = TemporaryFolder()
+
+    @Test
+    fun `should export resources to output file`() {
+
+        // Given
+        val project: Project = mock()
+        val importer: XlsImporter = mock()
+        val exporter: XlsExporter = mock()
+        val extension = AndroidI18nPluginExtension(project, importer, exporter)
+        extension.sourceFile = "/path/to/my-i18n-file.xlsx"
+        extension.defaultLocale = "en"
+        val buildDir = buildDirRule.newFolder()
+        given(project.buildDir).willReturn(buildDir)
+
+        // When
+        extension.exportI18nResources()
+
+        // Then
+        then(exporter).should().export(any(), eq("en"))
+        assertTrue(Paths.get(buildDir.path, "my-i18n-file.xlsx").toFile().exists())
     }
 }

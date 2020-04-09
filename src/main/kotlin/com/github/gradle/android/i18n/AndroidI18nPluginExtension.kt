@@ -80,6 +80,10 @@ open class AndroidI18nPluginExtension(
 
     /**
      * Exports the project android i18n resources to an output file.
+     *
+     * That file will be located in the project's `build` directory.
+     *
+     * The file name will be the same as the configured source file.
      */
     fun exportI18nResources() {
         val basePath = Paths.get(sourceFile).fileName.toString()
