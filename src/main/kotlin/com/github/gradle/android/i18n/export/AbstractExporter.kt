@@ -34,15 +34,13 @@ abstract class AbstractExporter(private val project: Project) {
                 val resourcesFile = directory.walkTopDown().maxDepth(1).first { file -> file.name == "strings.xml" }
                 val stringResources = xmlMapper.readValue<StringResources>(resourcesFile.inputStream())
 
-                if (locale.isBlank()) {
-                    stringResources.locale = defaultLocale
-                    stringResources.defaultLocale = true
+                val resourceToAdd = if (locale.isBlank()) {
+                    stringResources.copy(locale = defaultLocale, defaultLocale = true)
                 } else {
-                    stringResources.locale = locale
-                    stringResources.defaultLocale = false
+                    stringResources.copy(locale = locale, defaultLocale = false)
                 }
 
-                resources.add(stringResources)
+                resources.add(resourceToAdd)
             }
 
         return resources
