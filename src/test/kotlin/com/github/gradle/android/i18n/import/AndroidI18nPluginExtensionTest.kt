@@ -10,7 +10,7 @@ import java.io.FileInputStream
 /**
  * Plugin extension tests regarding import task methods.
  */
-class PluginExtensionTest : AbstractUnitTest() {
+class AndroidI18nPluginExtensionTest : AbstractUnitTest() {
 
     @Test
     fun `should use 'FileInputStream' when importing i18n resources from xls source`() {
