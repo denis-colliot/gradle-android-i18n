@@ -12,7 +12,7 @@ import java.nio.file.Paths
  */
 abstract class AbstractExporter(private val project: Project) {
 
-    private val resFolderPattern = Regex("values(:?-(.*))?")
+    private val resFolderPattern = "values(:?-(.*))?".toRegex()
 
     /**
      * Exports the `xml` android string resources to the given output stream.
