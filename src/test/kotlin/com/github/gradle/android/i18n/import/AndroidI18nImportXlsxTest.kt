@@ -10,6 +10,7 @@ import java.io.FileInputStream
 /**
  * Plugin XLSX import task tests.
  */
+@Suppress("UsePropertyAccessSyntax")
 class AndroidI18nImportXlsxTest : AbstractAndroidI18nImportTest() {
 
     private val xlsxResource = resource("/xls-import/input.xlsx")
@@ -17,7 +18,7 @@ class AndroidI18nImportXlsxTest : AbstractAndroidI18nImportTest() {
     @Test
     fun `should use 'FileInputStream' when importing i18n resources from xlsx source`() {
         with(mock<XlsImporter>()) {
-            AndroidI18nPluginExtension(mock(), this).apply {
+            AndroidI18nPluginExtension(mock(), this, mock()).apply {
                 sourceFile = xlsxResource.path
                 importAllSheets = true
                 importI18nResources()

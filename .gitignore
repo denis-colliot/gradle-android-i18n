@@ -26,3 +26,6 @@ local.properties
 
 # Xls lock files.
 .~lock*
+
+# Generated native files
+/src/test/resources/export/userHome

@@ -7,12 +7,21 @@ resources files from a given translations (i18n) source file.
 
 The plugin provides the following gradle tasks:
 
-- **`androidI18nImport`**: imports the i18n translations from the source file and generates the android resources for each supported locale :
+- **`androidI18nImport`**: imports the i18n translations from the source file and generates the android resources for each supported locale:
   - `values/strings.xml`
   - `values-fr/strings.xml`
   - `values-es/strings.xml`
 
-- **`androidI18nExport`**: *(WIP: coming soon)*
+- **`androidI18nExport`**: export the android resources for all locales to a XLSX file in the `build` directory of the current module. The path of the generated XLSX file is displayed in the build output:
+
+    ```
+    ./gradlew app:androidI18nExport
+    [...]
+    > Task :app:androidI18nExport
+    Resources were exported to:
+    /path/to/app/build/i18n.xlsx
+    [...]
+    ```
 
 
 # Installation

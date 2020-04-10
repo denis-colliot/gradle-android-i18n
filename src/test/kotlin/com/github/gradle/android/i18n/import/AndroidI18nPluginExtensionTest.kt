@@ -1,22 +1,32 @@
 package com.github.gradle.android.i18n.import
 
 import com.github.gradle.android.i18n.AndroidI18nPluginExtension
+import com.github.gradle.android.i18n.export.XlsExporter
 import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions.assertThat
+import org.gradle.api.Project
+import org.junit.Assert.assertTrue
+import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TemporaryFolder
 import testutil.AbstractUnitTest
 import java.io.FileInputStream
+import java.nio.file.Paths
 
 /**
  * Plugin extension tests regarding import task methods.
  */
-class PluginExtensionTest : AbstractUnitTest() {
+class AndroidI18nPluginExtensionTest : AbstractUnitTest() {
+
+    @Rule
+    @JvmField
+    val temporaryFolder = TemporaryFolder()
 
     @Test
     fun `should use 'FileInputStream' when importing i18n resources from xls source`() {
         val xls2XmlGenerator = mock<XlsImporter>()
 
-        AndroidI18nPluginExtension(mock(), xls2XmlGenerator).apply {
+        AndroidI18nPluginExtension(mock(), xls2XmlGenerator, mock()).apply {
             sourceFile = resource("/xls-import/input.xls").path
             importI18nResources()
         }
@@ -33,7 +43,7 @@ class PluginExtensionTest : AbstractUnitTest() {
     @Test
     fun `should do nothing when importing i18n resources without source file`() {
         mock<XlsImporter>().let { importer ->
-            AndroidI18nPluginExtension(mock(), importer).importI18nResources()
+            AndroidI18nPluginExtension(mock(), importer, mock()).importI18nResources()
             verify(importer, times(0)).generate(any(), any())
         }
     }
@@ -41,7 +51,7 @@ class PluginExtensionTest : AbstractUnitTest() {
     @Test
     fun `should do nothing when importing i18n resources with empty source file`() {
         mock<XlsImporter>().let { importer ->
-            AndroidI18nPluginExtension(mock(), importer).apply {
+            AndroidI18nPluginExtension(mock(), importer, mock()).apply {
                 sourceFile = ""
                 importI18nResources()
             }
@@ -52,11 +62,32 @@ class PluginExtensionTest : AbstractUnitTest() {
     @Test
     fun `should do nothing when importing i18n resources with blank source file`() {
         mock<XlsImporter>().let { importer ->
-            AndroidI18nPluginExtension(mock(), importer).apply {
+            AndroidI18nPluginExtension(mock(), importer, mock()).apply {
                 sourceFile = " "
                 importI18nResources()
             }
             verify(importer, times(0)).generate(any(), any())
         }
+    }
+
+    @Test
+    fun `should export resources to output file`() {
+
+        // Given
+        val project: Project = mock()
+        val importer: XlsImporter = mock()
+        val exporter: XlsExporter = mock()
+        val extension = AndroidI18nPluginExtension(project, importer, exporter)
+        extension.sourceFile = "/path/to/my-i18n-file.xlsx"
+        extension.defaultLocale = "en"
+        val buildDir = temporaryFolder.newFolder()
+        given(project.buildDir).willReturn(buildDir)
+
+        // When
+        extension.exportI18nResources()
+
+        // Then
+        then(exporter).should().export(any(), eq("en"))
+        assertTrue(Paths.get(buildDir.path, "my-i18n-file.xlsx").toFile().exists())
     }
 }

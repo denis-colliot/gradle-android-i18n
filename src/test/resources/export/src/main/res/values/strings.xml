@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources>
+    <string name="name1">Value 1</string>
+    <string name="name2">Value 2</string>
+    <string name="name3">Value 3</string>
+    <string name="name4">Valeur \'with quotes\' 4</string>
+
+    <plurals name="plurals1">
+        <item quantity="one">%s singular 1</item>
+        <item quantity="other">%s plural 1</item>
+    </plurals>
+    <plurals name="plurals2">
+        <item quantity="one">%d singular 2</item>
+        <item quantity="other">%d plural 2</item>
+    </plurals>
+    <plurals name="plurals3">
+        <item quantity="one">%d singular 3 with \'quotes\'</item>
+        <item quantity="other">%d plural 3 with \'quotes\'</item>
+    </plurals>
+</resources>
+

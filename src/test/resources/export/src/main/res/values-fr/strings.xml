@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources>
+    <string name="name1">Valeur 1</string>
+    <string name="name2">Valeur 2</string>
+    <string name="name3">Valeur 3</string>
+    <string name="name4">Valeur \'avec guillemets\' 4</string>
+
+    <plurals name="plurals1">
+        <item quantity="one">%s singulier 1</item>
+        <item quantity="other">%s pluriel 1</item>
+    </plurals>
+    <plurals name="plurals2">
+        <item quantity="one">%d singulier 2</item>
+        <item quantity="other">%d pluriel 2</item>
+    </plurals>
+    <plurals name="plurals3">
+        <item quantity="one">%d singulier 3 avec \'guillemets\'</item>
+        <item quantity="other">%d pluriel 3 avec \'guillemets\'</item>
+    </plurals>
+</resources>
+
