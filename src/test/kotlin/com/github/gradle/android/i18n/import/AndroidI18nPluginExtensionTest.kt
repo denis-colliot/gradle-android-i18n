@@ -10,8 +10,8 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import testutil.AbstractUnitTest
+import java.io.File
 import java.io.FileInputStream
-import java.nio.file.Paths
 
 /**
  * Plugin extension tests regarding import task methods.
@@ -78,7 +78,6 @@ class AndroidI18nPluginExtensionTest : AbstractUnitTest() {
         val importer: XlsImporter = mock()
         val exporter: XlsExporter = mock()
         val extension = AndroidI18nPluginExtension(project, importer, exporter)
-        extension.sourceFile = "/path/to/my-i18n-file.xlsx"
         extension.defaultLocale = "en"
         val buildDir = temporaryFolder.newFolder()
         given(project.buildDir).willReturn(buildDir)
@@ -88,6 +87,15 @@ class AndroidI18nPluginExtensionTest : AbstractUnitTest() {
 
         // Then
         then(exporter).should().export(any(), eq("en"))
-        assertTrue(Paths.get(buildDir.path, "my-i18n-file.xlsx").toFile().exists())
+        assertContains(buildDir, "i18n_", ".xlsx")
+    }
+
+    @Suppress("SameParameterValue")
+    private fun assertContains(buildDir: File?, prefix: String, suffix: String) {
+        val filesMatchingPattern = buildDir?.listFiles { pathname ->
+            val name = pathname.name
+            name.startsWith(prefix) && name.endsWith(suffix)
+        } ?: arrayOf()
+        assertTrue(filesMatchingPattern.isNotEmpty())
     }
 }
