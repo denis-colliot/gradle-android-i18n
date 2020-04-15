@@ -4,12 +4,15 @@ import com.github.gradle.android.i18n.AndroidI18nPluginExtension
 import com.github.gradle.android.i18n.export.XlsExporter
 import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Condition
 import org.gradle.api.Project
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import testutil.AbstractUnitTest
 import java.io.FileInputStream
+import java.nio.file.Paths
+import java.util.function.Predicate
 
 /**
  * Plugin extension tests regarding import task methods.
@@ -86,8 +89,50 @@ class AndroidI18nPluginExtensionTest : AbstractUnitTest() {
         // Then
         then(exporter).should().export(any(), eq("en"))
         assertThat(buildDir).isDirectoryContaining { file ->
-            val name = file.name
-            name.startsWith("i18n_") && name.endsWith(".xlsx")
+            file.name
+            file.name.matches(EXPECTED_OUTPUT_FILE_PATTERN.toRegex())
         }
+    }
+
+    @Test
+    fun `should remove previous output files`() {
+
+        // Setup
+        val project: Project = mock()
+        val importer: XlsImporter = mock()
+        val exporter: XlsExporter = mock()
+        val extension = AndroidI18nPluginExtension(project, importer, exporter)
+        extension.defaultLocale = "en"
+
+        // Given
+        val buildDir = temporaryFolder.newFolder()
+        Paths.get(buildDir.path, "i18n_file1.xlsx").toFile().createNewFile()
+        Paths.get(buildDir.path, "i18n_file2.xlsx").toFile().createNewFile()
+        Paths.get(buildDir.path, "other_file.txt").toFile().createNewFile()
+        given(project.buildDir).willReturn(buildDir)
+
+        // When
+        extension.exportI18nResources()
+
+        // Then
+        assertThat(buildDir)
+            .isDirectoryContaining { file ->
+                file.name.matches(EXPECTED_OUTPUT_FILE_PATTERN.toRegex())
+            }.isDirectoryContaining { file ->
+                file.name == "other_file.txt"
+            }.has(
+                Condition(
+                    Predicate { it?.listFiles()?.size == 2 },
+                    "Only 2 elements"
+                )
+            )
+    }
+
+    companion object {
+        /**
+         * Expected output file pattern: `i18n_YYYY-MM-DD_HH-MM-SS.xlsx`
+         */
+        private const val EXPECTED_OUTPUT_FILE_PATTERN =
+            "^i18n_[\\d]{4}-[\\d]{2}-[\\d]{2}_[\\d]{2}-[\\d]{2}-[\\d]{2}\\.xlsx$"
     }
 }

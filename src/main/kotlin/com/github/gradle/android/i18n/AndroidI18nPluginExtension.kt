@@ -86,6 +86,13 @@ open class AndroidI18nPluginExtension(
      * The file name will be the same as the configured source file.
      */
     fun exportI18nResources() {
+
+        // Remove previous output files
+        project.buildDir.listFiles { file ->
+            file.name.matches("^$BASE_OUTPUT_PATH_PREFIX.*$BASE_OUTPUT_PATH_SUFFIX$".toRegex())
+        }?.forEach { it.delete() }
+
+        // Export to output file
         val formatter = DateTimeFormatter.ofPattern(BASE_OUTPUT_PATH_TIMESTAMP_PATTERN)
         val timestamp = formatter.format(LocalDateTime.now())
         val basePath = "$BASE_OUTPUT_PATH_PREFIX$timestamp$BASE_OUTPUT_PATH_SUFFIX"
