@@ -86,17 +86,22 @@ open class AndroidI18nPluginExtension(
      * The file name will be the same as the configured source file.
      */
     fun exportI18nResources() {
+        val outputParentDirectory = project.buildDir.also {
+            it.mkdirs() // Ensure parent folder is created
+        }
 
         // Remove previous output files
-        project.buildDir.listFiles { file ->
+        outputParentDirectory.listFiles { file ->
             file.name.matches("^$BASE_OUTPUT_PATH_PREFIX.*$BASE_OUTPUT_PATH_SUFFIX$".toRegex())
         }?.forEach { it.delete() }
 
-        // Export to output file
+        // Build output file
         val formatter = DateTimeFormatter.ofPattern(BASE_OUTPUT_PATH_TIMESTAMP_PATTERN)
         val timestamp = formatter.format(LocalDateTime.now())
         val basePath = "$BASE_OUTPUT_PATH_PREFIX$timestamp$BASE_OUTPUT_PATH_SUFFIX"
-        val outputFile = File(project.buildDir, basePath)
+        val outputFile = File(outputParentDirectory, basePath)
+
+        // Export to output file
         outputFile.outputStream().use { outputStream ->
             xlsExporter.export(outputStream, defaultLocale)
             println("Resources were exported to:\n${outputFile.path}")
@@ -127,14 +132,14 @@ open class AndroidI18nPluginExtension(
      */
     private fun setJcifsProperties() {
         project.properties
-                .filter {
-                    it.key.startsWith("androidI18n.jcifs.")
-                            && it.value is String
-                            && (it.value as String).isNotBlank()
-                }
-                .forEach {
-                    jcifs.Config.setProperty(it.key.substringAfter('.'), it.value.toString().trim())
-                }
+            .filter {
+                it.key.startsWith("androidI18n.jcifs.")
+                        && it.value is String
+                        && (it.value as String).isNotBlank()
+            }
+            .forEach {
+                jcifs.Config.setProperty(it.key.substringAfter('.'), it.value.toString().trim())
+            }
     }
 
     companion object {
