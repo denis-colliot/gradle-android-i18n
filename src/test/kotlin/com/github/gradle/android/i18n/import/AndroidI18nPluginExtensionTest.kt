@@ -5,12 +5,10 @@ import com.github.gradle.android.i18n.export.XlsExporter
 import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions.assertThat
 import org.gradle.api.Project
-import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import testutil.AbstractUnitTest
-import java.io.File
 import java.io.FileInputStream
 
 /**
@@ -87,15 +85,9 @@ class AndroidI18nPluginExtensionTest : AbstractUnitTest() {
 
         // Then
         then(exporter).should().export(any(), eq("en"))
-        assertContains(buildDir, "i18n_", ".xlsx")
-    }
-
-    @Suppress("SameParameterValue")
-    private fun assertContains(buildDir: File?, prefix: String, suffix: String) {
-        val filesMatchingPattern = buildDir?.listFiles { pathname ->
-            val name = pathname.name
-            name.startsWith(prefix) && name.endsWith(suffix)
-        } ?: arrayOf()
-        assertTrue(filesMatchingPattern.isNotEmpty())
+        assertThat(buildDir).isDirectoryContaining { file ->
+            val name = file.name
+            name.startsWith("i18n_") && name.endsWith(".xlsx")
+        }
     }
 }
