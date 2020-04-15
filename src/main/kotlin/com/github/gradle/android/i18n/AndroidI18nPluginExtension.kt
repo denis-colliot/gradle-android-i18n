@@ -8,7 +8,8 @@ import org.gradle.api.Project
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.InputStream
-import java.nio.file.Paths
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 /**
  * [AndroidI18nPlugin] extension.
@@ -85,7 +86,16 @@ open class AndroidI18nPluginExtension(
      * The file name will be the same as the configured source file.
      */
     fun exportI18nResources() {
-        val basePath = Paths.get(sourceFile).fileName.toString()
+
+        // Remove previous output files
+        project.buildDir.listFiles { file ->
+            file.name.matches("^$BASE_OUTPUT_PATH_PREFIX.*$BASE_OUTPUT_PATH_SUFFIX$".toRegex())
+        }?.forEach { it.delete() }
+
+        // Export to output file
+        val formatter = DateTimeFormatter.ofPattern(BASE_OUTPUT_PATH_TIMESTAMP_PATTERN)
+        val timestamp = formatter.format(LocalDateTime.now())
+        val basePath = "$BASE_OUTPUT_PATH_PREFIX$timestamp$BASE_OUTPUT_PATH_SUFFIX"
         val outputFile = File(project.buildDir, basePath)
         outputFile.outputStream().use { outputStream ->
             xlsExporter.export(outputStream, defaultLocale)
@@ -125,5 +135,11 @@ open class AndroidI18nPluginExtension(
                 .forEach {
                     jcifs.Config.setProperty(it.key.substringAfter('.'), it.value.toString().trim())
                 }
+    }
+
+    companion object {
+        private const val BASE_OUTPUT_PATH_PREFIX = "i18n_"
+        private const val BASE_OUTPUT_PATH_TIMESTAMP_PATTERN = "yyyy-MM-dd_HH-mm-ss"
+        private const val BASE_OUTPUT_PATH_SUFFIX = ".xlsx"
     }
 }
