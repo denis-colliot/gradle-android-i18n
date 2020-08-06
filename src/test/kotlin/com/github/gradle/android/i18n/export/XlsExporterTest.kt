@@ -1,6 +1,8 @@
 package com.github.gradle.android.i18n.export
 
+import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.ss.usermodel.WorkbookFactory
+import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Assert.assertEquals
 import org.junit.Rule
@@ -16,7 +18,7 @@ class XlsExporterTest {
     val temporaryFolder = TemporaryFolder()
 
     @Test
-    fun `should export to xlsx`() {
+    fun `should export single module strings to xlsx`() {
 
         // Given
         val projectDir = File("src/test/resources/export")
@@ -48,17 +50,107 @@ class XlsExporterTest {
                 listOf("plurals3:one", "%d singular 3 with 'quotes'", "%d singulier 3 avec 'guillemets'"),
                 listOf("plurals3:other", "%d plural 3 with 'quotes'", "%d pluriel 3 avec 'guillemets'")
             ),
-            outputFile.toRows()
+            outputFile.parsedFirstSheet()
+        )
+    }
+
+    @Test
+    fun `should export multi module strings to xlsx`() {
+
+        // Given
+        val projectDir = File("src/test/resources/export_multi")
+        val rootProject = ProjectBuilder.builder().withProjectDir(projectDir).build()
+        rootProject.attachNewChildProject(File(projectDir, "app"))
+        rootProject.attachNewChildProject(File(projectDir, "lib"))
+        val exporter = XlsExporter(rootProject)
+        val outputFile = temporaryFolder.newFile("i18n.xlsx")
+        val outputStream = FileOutputStream(outputFile)
+
+        outputStream.let {
+
+            // When
+            exporter.export(it, "en")
+            it.close()
+            println("Exported file:\n${outputFile.path}")
+        }
+
+        // Then
+        assertEquals(
+            mapOf(
+                "app" to listOf(
+                    listOf("key", "en", "fr"),
+                    listOf("app-name1", "App Value 1", "Valeur App 1"),
+                    listOf("app-name2", "App Value 2", "Valeur App 2")
+                ), "lib" to listOf(
+                    listOf("key", "en", "fr"),
+                    listOf("lib-name1", "Lib Value 1", "Valeur Lib 1"),
+                    listOf("lib-name2", "Lib Value 2", "Valeur Lib 2")
+                )
+            ),
+            outputFile.parsedSheetsByName()
+        )
+    }
+
+    @Test
+    fun `should export multi module strings to xlsx skipping modules without strings`() {
+
+        // Given
+        val projectDir = File("src/test/resources/export_multi")
+        val rootProject = ProjectBuilder.builder().withProjectDir(projectDir).build()
+        rootProject.attachNewChildProject(File(projectDir, "app"))
+        rootProject.attachNewChildProject(File(projectDir, "lib-no-strings"))
+        val exporter = XlsExporter(rootProject)
+        val outputFile = temporaryFolder.newFile("i18n.xlsx")
+        val outputStream = FileOutputStream(outputFile)
+
+        outputStream.let {
+
+            // When
+            exporter.export(it, "en")
+            it.close()
+            println("Exported file:\n${outputFile.path}")
+        }
+
+        // Then
+        assertEquals(
+            mapOf(
+                "app" to listOf(
+                    listOf("key", "en", "fr"),
+                    listOf("app-name1", "App Value 1", "Valeur App 1"),
+                    listOf("app-name2", "App Value 2", "Valeur App 2")
+                )
+            ),
+            outputFile.parsedSheetsByName()
         )
     }
 }
 
-private fun File.toRows(): List<List<String>> {
-    val sheet = WorkbookFactory.create(this).first()
+/**
+ * Attach a new child project
+ */
+private fun Project.attachNewChildProject(moduleDir: File) {
+    ProjectBuilder.builder()
+            .withProjectDir(moduleDir)
+            .withParent(this)
+            .withName(moduleDir.name)
+            .build()
+}
 
-    @Suppress("UnnecessaryVariable")
-    val rows = sheet.rowIterator().asSequence().toList().map { row ->
+private fun File.parsedSheetsByName(): Map<String, ParsedSheet> =
+    WorkbookFactory.create(this).associate { sheet ->
+        sheet.sheetName to sheet.parsed()
+    }
+
+private typealias ParsedCell = String
+private typealias ParsedRow = List<ParsedCell>
+private typealias ParsedSheet = List<ParsedRow>
+
+private fun File.parsedFirstSheet(): ParsedSheet {
+    val sheet = WorkbookFactory.create(this).first()
+    return sheet.parsed()
+}
+
+private fun Sheet.parsed(): ParsedSheet =
+    rowIterator().asSequence().toList().map { row ->
         row.cellIterator().asSequence().toList().map { cell -> cell.stringCellValue }
     }
-    return rows
-}

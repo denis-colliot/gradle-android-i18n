@@ -18,9 +18,13 @@ class XmlResource() {
     @JacksonXmlText
     var text: String? = null
 
-    constructor(name: String? = null, quantity: String? = null, text: String? = null) : this() {
+    @JacksonXmlProperty(isAttribute = true)
+    var translatable: Boolean? = null
+
+    constructor(name: String? = null, quantity: String? = null, text: String? = null, translatable: Boolean? = null) : this() {
         this.name = name
         this.quantity = quantity
         this.text = text
+        this.translatable = translatable
     }
 }

@@ -3,7 +3,7 @@
     <string name="name1">Value 1</string>
     <string name="name2">Value 2</string>
     <string name="name3">Value 3</string>
-    <string name="name4">Valeur \'with quotes\' 4</string>
+    <string name="name4" translatable="true">Valeur \'with quotes\' 4</string>
 
     <plurals name="plurals1">
         <item quantity="one">%s singular 1</item>
