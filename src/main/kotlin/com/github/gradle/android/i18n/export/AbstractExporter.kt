@@ -2,7 +2,7 @@ package com.github.gradle.android.i18n.export
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.gradle.android.i18n.conf.Configuration.xmlMapper
-import com.github.gradle.android.i18n.model.StringResources
+import com.github.gradle.android.i18n.model.*
 import org.gradle.api.Project
 import java.io.File
 import java.io.OutputStream
@@ -21,10 +21,86 @@ abstract class AbstractExporter(private val project: Project) {
      * Exports the `xml` android string resources to the given output stream.
      */
     abstract fun export(outputStream: OutputStream, defaultLocale: String)
+
+    protected fun loadProjectResources(defaultLocale: String) =
+        project.deserializeResources(defaultLocale).toProjectData()
 }
 
-// TODO: Make private
-fun moduleResources(
+private fun Project.deserializeResources(defaultLocale: String): Map<Project, List<StringResources>> {
+
+    val result = mutableMapOf<Project, List<StringResources>>()
+
+    forEachModule { moduleProject ->
+        val resources = moduleResources(moduleProject.projectDir.absolutePath, defaultLocale)
+        if (resources.isNotEmpty()) {
+            result[moduleProject] = resources
+        }
+    }
+
+    return result
+}
+
+/**
+ * Apply a callback to each module project that is a child of the receiver.
+ *
+ * Given a project `rootProject` with the following structure:
+ *
+ * ```
+ * :app
+ * :features:feature1
+ * :features:feature2
+ * :library:library1
+ * :library:library2
+ * ```
+ *
+ * Calling `rootProject.forEachModule(callback) will apply the callback
+ * to `app`, `feature1`, `feature2`, `library1` and `library2`
+ * but not to `features` and `library` that are also considered by Gradle as child projects.
+ */
+private fun Project.forEachModule(callback: (Project) -> Unit) {
+    if (this.childProjects.isEmpty()) {
+        callback(this)
+    } else {
+        this.childProjects.forEach {
+            it.value.forEachModule(callback)
+        }
+    }
+}
+
+private fun Map<Project, List<StringResources>>.toProjectData(): ProjectData {
+
+    val modules = map { entry ->
+        val (moduleProj, resources) = entry
+        val moduleDataName = moduleProj.path
+            .replace("^:".toRegex(), "")
+            .replace(':', '-')
+            .let { name ->
+                if (name.isNotEmpty()) name
+                else "android-i18n"
+            }
+        val translations = resources.map { it.toTranslationData() }
+        ModuleData(moduleDataName, translations)
+    }
+    return ProjectData(modules)
+}
+
+private fun StringResources.toTranslationData(): TranslationData {
+    val fromStrings = strings.map { it.toStringData() }
+    val fromPlurals = plurals.flatMap { it.toStringDataList() }
+    val stringDataList = fromStrings + fromPlurals
+    return TranslationData(locale, stringDataList)
+}
+
+private fun XmlResource.toStringData(): StringData = StringData(name, text?.unescapeQuotes)
+
+private fun XmlResources.toStringDataList(): List<StringData> = items.map {
+    val namePrefix =
+        if (name.isBlank()) ""
+        else "${name}:"
+    StringData(namePrefix + it.quantity, it.text?.unescapeQuotes)
+}
+
+private fun moduleResources(
     modulePath: String,
     defaultLocale: String
 ): List<StringResources> {
@@ -39,6 +115,7 @@ fun moduleResources(
         .filter { it.isDirectory && resFolderPattern.matches(it.name) }
         .sortedBy { it.path }
         .map { resourcesInDirectory(it, resFolderPattern, defaultLocale) }
+        .filter { it.strings.isNotEmpty() || it.plurals.isNotEmpty() }
         .forEach { resources.add(it) }
     return resources
 }
@@ -66,4 +143,4 @@ private fun resourcesInDirectory(
         } ?: StringResources()
 }
 
-internal val String?.unescapeQuotes: String? get() = this?.replace("\\'", "'")
+internal val String.unescapeQuotes: String get() = this.replace("\\'", "'")
