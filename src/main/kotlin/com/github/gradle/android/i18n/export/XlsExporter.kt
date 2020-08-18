@@ -6,7 +6,10 @@ import org.gradle.api.Project
 import java.io.OutputStream
 
 /**
- * An Exporter that reads all Android string resources in a Project and writes an Excel spreadsheet.
+ * An Exporter that reads Android string resources in a Project and writes an Excel spreadsheet.
+ *
+ * This class defines how to export the resources ⇒ to and Excel workbook.
+ * The parent class [AbstractExporter] defines which resources to export.
  */
 class XlsExporter(project: Project) : AbstractExporter(project) {
 

@@ -11,7 +11,7 @@ import java.nio.file.Paths
 /**
  * Android `xml` string resources exporter.
  *
- * This class implements loading resources from the `strings.xml` files of the project.
+ * This class implements loading resources from the `*strings.xml` files of the project.
  *
  * The implementation of writing to an output file is left to concrete classes.
  */
