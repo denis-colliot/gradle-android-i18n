@@ -132,7 +132,7 @@ private fun resourcesInDirectory(
 
     return directory.walkTopDown()
         .maxDepth(1)
-        .firstOrNull { file -> file.name == "strings.xml" }
+        .firstOrNull { file -> file.name.endsWith("strings.xml") }
         ?.let { stringsFile -> xmlMapper.readValue<StringResources>(stringsFile.inputStream()) }
         ?.let { stringResources ->
             if (locale.isBlank()) {

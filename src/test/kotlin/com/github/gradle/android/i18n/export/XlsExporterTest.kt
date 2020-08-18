@@ -123,13 +123,53 @@ class XlsExporterTest {
             outputFile.parsedSheetsByName()
         )
     }
+
+    @Test
+    fun `should export multi module strings with path prefix in path`() {
+
+        // Given
+        val projectDir = File("src/test/resources/export_multi")
+        val rootProject = ProjectBuilder.builder().withProjectDir(projectDir).build()
+        rootProject.attachNewChildProject(File(projectDir, "app"))
+        val intermediateDir = File(projectDir, "features")
+        val intermediateProject = rootProject.attachNewChildProject(intermediateDir)
+        intermediateProject.attachNewChildProject(File(intermediateDir, "feature1"))
+        val exporter = XlsExporter(rootProject)
+        val outputFile = temporaryFolder.newFile("i18n.xlsx")
+        val outputStream = FileOutputStream(outputFile)
+
+        outputStream.let {
+
+            // When
+            exporter.export(it, "en")
+            it.close()
+            println("Exported file:\n${outputFile.path}")
+        }
+
+        // Then
+        assertEquals(
+            mapOf(
+                "app" to listOf(
+                    listOf("key", "en", "fr"),
+                    listOf("app-name1", "App Value 1", "Valeur App 1"),
+                    listOf("app-name2", "App Value 2", "Valeur App 2")
+                ),
+                "features-feature1" to listOf(
+                    listOf("key", "en", "fr"),
+                    listOf("feature1-name1", "Feature 1 Value 1", "Valeur 1 Fonctionnalité 1"),
+                    listOf("feature1-name2", "Feature 1 Value 2", "Valeur 2 Fonctionnalité 1")
+                )
+            ),
+            outputFile.parsedSheetsByName()
+        )
+    }
 }
 
 /**
  * Attach a new child project
  */
-private fun Project.attachNewChildProject(moduleDir: File) {
-    ProjectBuilder.builder()
+private fun Project.attachNewChildProject(moduleDir: File): Project {
+    return ProjectBuilder.builder()
             .withProjectDir(moduleDir)
             .withParent(this)
             .withName(moduleDir.name)
