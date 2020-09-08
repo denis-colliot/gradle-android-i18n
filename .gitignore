@@ -30,3 +30,8 @@ local.properties
 
 # Generated native files
 /src/test/resources/export/userHome
+/src/test/resources/import_multi/userHome/native/
+
+# Other files
+/src/test/resources/import_multi/**/src/main/res/
+**/~$*.xls*

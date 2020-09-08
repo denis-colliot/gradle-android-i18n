@@ -72,6 +72,7 @@ private fun Map<Project, List<StringResources>>.toProjectData(): ProjectData {
     val modules = map { (moduleProj, resources) ->
         val moduleDataName = moduleProj.path
             .replace("^:".toRegex(), "")
+            .replaceFirst(':', '.')
             .replace(':', '-')
             .let { name ->
                 if (name.isNotEmpty()) name
@@ -84,7 +85,7 @@ private fun Map<Project, List<StringResources>>.toProjectData(): ProjectData {
 }
 
 private fun StringResources.toTranslationData(): TranslationData {
-    val fromStrings = strings.map { it.toStringData() }
+    val fromStrings = strings.map { it.toStringData() }.sortedBy { it.name }
     val fromPlurals = plurals.flatMap { it.toStringDataList() }
     val stringDataList = fromStrings + fromPlurals
     return TranslationData(locale, stringDataList)

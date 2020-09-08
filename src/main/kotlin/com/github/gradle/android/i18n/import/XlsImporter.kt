@@ -20,14 +20,34 @@ class XlsImporter(private val project: Project) : AbstractImporter(project) {
     override fun generate(inputStream: InputStream, config: ImportConfig) {
 
         val workbook = WorkbookFactory.create(inputStream) // TODO .use
-        val projectData = workbook.toProjectData(config)
+
+        val projectData = if (project.isSingleModule()) {
+            workbook.toSingleModuleProjectData(config)
+        } else {
+            workbook.toMultiModuleProjectData(config)
+        }
+
         val stringResourcesByPath = projectData.toStringResourcesByPath(project.projectDir, config)
         stringResourcesByPath.write()
     }
-
 }
 
-private fun Workbook.toProjectData(config: ImportConfig): ProjectData {
+private fun Project.isSingleModule(): Boolean {
+    return this.childProjects.size <= 1
+}
+
+private fun Workbook.toMultiModuleProjectData(config: ImportConfig): ProjectData {
+    val moduleDataList = this.map { sheet: Sheet ->
+        val stringDataByLocale = sheet.toList().toStringDataByLocale()
+        val translationDataList = stringDataByLocale.keys.map { locale ->
+            TranslationData(locale, stringDataByLocale[locale] as List<StringData>)
+        }
+        ModuleData(sheet.sheetName, translationDataList)
+    }
+    return ProjectData(moduleDataList)
+}
+
+private fun Workbook.toSingleModuleProjectData(config: ImportConfig): ProjectData {
     val rows = readWorkbookRows(config, this)
     val stringDataByLocale = rows.toStringDataByLocale()
     val translationDataList = stringDataByLocale.keys.map { locale ->
@@ -122,21 +142,33 @@ private fun readWorkbookRows(config: ImportConfig, workbook: Workbook): List<Row
 private fun ProjectData.toStringResourcesByPath(
     baseDir: File,
     config: ImportConfig
-): Map<Path, StringResources> =
-    this.modules.map { moduleData ->
-        val moduleResPath = Paths.get(baseDir.path, "src", "main", "res")
+): Map<Path, StringResources> {
+    val isMultiModule = this.modules.size > 1
+    return this.modules.map { moduleData ->
+        val moduleBaseDir = if (isMultiModule) File(baseDir, moduleData.pathRelativeToProj()).path else baseDir.path
+        val moduleResPath = Paths.get(moduleBaseDir, "src", "main", "res")
         Pair(moduleResPath, moduleData)
     }.flatMap { (resDirPath, moduleData) ->
         moduleData.translations.map { translationData ->
             val valuesPath =
                 if (translationData.locale == config.defaultLocale) "values"
                 else "values-${translationData.locale}"
-            val stringsFileSubPath = Paths.get(valuesPath, "strings.xml")
+            val stringsFileName = if (isMultiModule) moduleData.stringsFileName() else "strings.xml"
+            val stringsFileSubPath = Paths.get(valuesPath, stringsFileName)
             val stringsFileFullPath = resDirPath.resolve(stringsFileSubPath)
             val stringResources = translationData.toStringResources(config)
             Pair(stringsFileFullPath, stringResources)
         }
     }.associateBy({ it.first }) { it.second }
+}
+
+private fun ModuleData.stringsFileName(): String =
+    "${this.name
+        .replace("^[^.]*\\.".toRegex(), "")
+        .replace('-', '_')}_strings.xml"
+
+private fun ModuleData.pathRelativeToProj(): String =
+    this.name.split(".").joinToString(File.separator)
 
 private fun TranslationData.toStringResources(config: ImportConfig): StringResources {
 

@@ -8,7 +8,7 @@ import java.io.OutputStream
 /**
  * An Exporter that reads Android string resources in a Project and writes an Excel spreadsheet.
  *
- * This class defines how to export the resources ⇒ to and Excel workbook.
+ * This class defines how to export the resources to an Excel workbook.
  * The parent class [AbstractExporter] defines which resources to export.
  */
 class XlsExporter(project: Project) : AbstractExporter(project) {
