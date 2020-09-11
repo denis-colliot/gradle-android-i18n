@@ -31,7 +31,7 @@ class XlsImporterTest : AbstractUnitTest() {
             rootProject.attachNewChildProject(appModuleDir)
             val featuresDir = File(projectDir, "features")
             val featuresProject = rootProject.attachNewChildProject(featuresDir)
-            val featureOneDir = File(featuresDir, "feature1")
+            val featureOneDir = File(featuresDir, "feature-one")
             featuresProject.attachNewChildProject(featureOneDir)
             val libDir = File(projectDir, "lib")
             rootProject.attachNewChildProject(libDir)
@@ -42,20 +42,30 @@ class XlsImporterTest : AbstractUnitTest() {
             importer.generate(inputStream, config)
 
             // Then
-            listOf(appModuleDir, featureOneDir, libDir).forEach { moduleDir: File ->
+            // Check that generated files are in project dir
+            // And that their content is as expected
+            listOf(
+                projectDir.resolve("app").path to "app_strings.xml",
+                projectDir.resolve("features/feature-one").path to "feature_one_strings.xml",
+                projectDir.resolve("lib").path to "lib_strings.xml"
+            ).forEach { (modulePath, expectedStringsFileName) ->
                 listOf("values", "values-en", "values-es").forEach { valuesDirName: String ->
 
-                    val actualStringsFile = Paths.get(moduleDir.path, "src", "main", "res", valuesDirName, "${moduleDir.name}_strings.xml").toFile()
+                    // Check generated file path
+                    val actualStringsFile = Paths.get(
+                        modulePath, "src", "main", "res", valuesDirName, expectedStringsFileName
+                    ).toFile()
                     assertTrue("${actualStringsFile.path} should exist", actualStringsFile.exists())
                     assertTrue("${actualStringsFile.path} should be a file", actualStringsFile.isFile)
 
-                    val expectedStringsFileName = "expected-$valuesDirName-strings.xml"
-                    val expectedStringsFile = Paths.get(moduleDir.path, expectedStringsFileName).toFile()
-                    val expectedStringsFileContent = expectedStringsFile.readText()
+                    // Check generated file content
+                    val referenceStringsFileName = "expected-$valuesDirName-strings.xml"
+                    val referenceStringsFile = Paths.get(modulePath, referenceStringsFileName).toFile()
+                    val referenceStringsFileContent = referenceStringsFile.readText()
                     val actualStringsFileContent = actualStringsFile.readText()
                     assertEquals(
-                        "${expectedStringsFile.path} and ${actualStringsFile.path} should be the same",
-                        expectedStringsFileContent,
+                        "${referenceStringsFile.path} and ${actualStringsFile.path} should be the same",
+                        referenceStringsFileContent,
                         actualStringsFileContent
                     )
                 }
