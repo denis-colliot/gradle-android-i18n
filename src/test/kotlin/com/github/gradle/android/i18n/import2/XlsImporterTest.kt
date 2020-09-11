@@ -5,12 +5,17 @@ import com.github.gradle.android.i18n.import.XlsImporter
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TemporaryFolder
 import testutil.AbstractUnitTest
 import java.io.File
 import java.nio.file.Paths
 
 class XlsImporterTest : AbstractUnitTest() {
+
+    @get:Rule
+    val tmpDirRule = TemporaryFolder()
 
     @Test
     fun `should generate string resources for multi module project`() {
@@ -18,7 +23,9 @@ class XlsImporterTest : AbstractUnitTest() {
         // Given
         resource("/xls-import-multi/input.xlsx").openStream().use { inputStream ->
             // Given
-            val projectDir = File("src/test/resources/import_multi")
+            val projectDirMaster = File("src/test/resources/import_multi")
+            val projectDir = tmpDirRule.newFolder("import_multi")
+            projectDirMaster.copyRecursively(projectDir)
             val rootProject = ProjectBuilder.builder().withProjectDir(projectDir).build()
             val appModuleDir = File(projectDir, "app")
             rootProject.attachNewChildProject(appModuleDir)
@@ -38,9 +45,9 @@ class XlsImporterTest : AbstractUnitTest() {
             listOf(appModuleDir, featureOneDir, libDir).forEach { moduleDir: File ->
                 listOf("values", "values-en", "values-es").forEach { valuesDirName: String ->
 
-                    val actualStringsFile = Paths.get(moduleDir.path, "src", "main", "res", valuesDirName, "strings.xml").toFile()
-                    assertTrue(actualStringsFile.exists())
-                    assertTrue(actualStringsFile.isFile)
+                    val actualStringsFile = Paths.get(moduleDir.path, "src", "main", "res", valuesDirName, "${moduleDir.name}_strings.xml").toFile()
+                    assertTrue("${actualStringsFile.path} should exist", actualStringsFile.exists())
+                    assertTrue("${actualStringsFile.path} should be a file", actualStringsFile.isFile)
 
                     val expectedStringsFileName = "expected-$valuesDirName-strings.xml"
                     val expectedStringsFile = Paths.get(moduleDir.path, expectedStringsFileName).toFile()
