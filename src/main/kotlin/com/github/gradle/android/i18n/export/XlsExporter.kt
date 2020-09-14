@@ -28,8 +28,8 @@ private fun ProjectData.toWorkbook(): XSSFWorkbook {
         // Header row: "key" | lang1 | lang2
         val headerRow = sheet.createRow(0)
         headerRow.createCell(0).setCellValue("key")
-        moduleData.translations.forEachIndexed { translationDataIndex, translationData ->
-            val colIndex = translationDataIndex + 1
+        moduleData.translations.forEachIndexed { langIndex, translationData ->
+            val colIndex = langIndex + 1
             headerRow.createCell(colIndex).setCellValue(translationData.locale)
         }
 
@@ -37,17 +37,17 @@ private fun ProjectData.toWorkbook(): XSSFWorkbook {
         // name1 | lang1-value1 | lang2-value1
         // name2 | lang1-value2 | lang2-value2
         val firstTranslation = moduleData.translations.first()
-        firstTranslation.stringDataList.forEachIndexed { firstTranslationStringDataIndex, firstTranslationStringData ->
-            val rowIndex = firstTranslationStringDataIndex + 1
+        firstTranslation.stringDataList.forEachIndexed { firstLangStringDataIndex, firstLangStringData ->
+            val rowIndex = firstLangStringDataIndex + 1
             val row = sheet.createRow(rowIndex)
 
             // First cell: name1
-            row.createCell(0).setCellValue(firstTranslationStringData.name)
+            row.createCell(0).setCellValue(firstLangStringData.name)
 
             // Next cells: lang1-value1 | lang2-value1
-            moduleData.translations.forEachIndexed { translationDataIndex, translationData ->
-                val colIndex = translationDataIndex + 1
-                val stringData = translationData.stringDataList[firstTranslationStringDataIndex]
+            moduleData.translations.forEachIndexed { langIndex, translationData ->
+                val colIndex = langIndex + 1
+                val stringData = translationData.stringDataList[firstLangStringDataIndex]
                 row.createCell(colIndex).setCellValue(stringData.text)
             }
         }
