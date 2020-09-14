@@ -22,7 +22,7 @@ abstract class AbstractExporter(private val project: Project) {
      */
     abstract fun export(outputStream: OutputStream, defaultLocale: String)
 
-    protected fun loadProjectResources(defaultLocale: String) =
+    protected fun loadProjectResources(defaultLocale: String): ProjectData =
         project.deserializeResources(defaultLocale).toProjectData()
 }
 
