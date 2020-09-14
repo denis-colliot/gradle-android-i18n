@@ -61,16 +61,15 @@ private fun Project.forEachModule(callback: (Project) -> Unit) {
     if (this.childProjects.isEmpty()) {
         callback(this)
     } else {
-        this.childProjects.forEach { (_, project) ->
-            project.forEachModule(callback)
+        this.childProjects.forEach { (_, childProj) ->
+            childProj.forEachModule(callback)
         }
     }
 }
 
 private fun Map<Project, List<StringResources>>.toProjectData(): ProjectData {
 
-    val modules = map { entry ->
-        val (moduleProj, resources) = entry
+    val modules = map { (moduleProj, resources) ->
         val moduleDataName = moduleProj.path
             .replace("^:".toRegex(), "")
             .replace(':', '-')
