@@ -61,8 +61,8 @@ private fun Project.forEachModule(callback: (Project) -> Unit) {
     if (this.childProjects.isEmpty()) {
         callback(this)
     } else {
-        this.childProjects.forEach {
-            it.value.forEachModule(callback)
+        this.childProjects.forEach { (_, project) ->
+            project.forEachModule(callback)
         }
     }
 }
