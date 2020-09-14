@@ -105,7 +105,7 @@ private fun moduleResources(
     defaultLocale: String
 ): List<StringResources> {
 
-    val resFolderPattern = "values(:?-(.*))?".toRegex()
+    val resFolderPattern = "values(-(.*))?".toRegex()
 
     val resources = mutableListOf<StringResources>()
     Paths.get(modulePath, "src", "main", "res")
