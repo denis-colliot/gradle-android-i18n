@@ -63,7 +63,8 @@ internal fun String.cleanUpTranslatedText(): String {
     } else if (sharpCount > 1) {
         for (index in 1..sharpCount) {
             mutableTranslation =
-                mutableTranslation.replaceFirst("$ARG_PLACEHOLDER".toRegex(),
+                mutableTranslation.replaceFirst(
+                    "$ARG_PLACEHOLDER".toRegex(),
                     getXmlIndexedArg(index)
                 )
         }
