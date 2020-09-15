@@ -98,7 +98,7 @@ The **import task** `androidI18nImport` will take an Excel spreadsheet and gener
 <tr>
 <td colspan="3">
 <pre>
-$ gradlew app:androidI18nImport -PTODO
+$ gradlew app:androidI18nImport -PandroidI18n.sourceFile=/path/to/project/build/i18n_2020-09-15_11-50-50.xlsx
 BUILD SUCCESSFUL in 28s
 </pre>
 </td>
