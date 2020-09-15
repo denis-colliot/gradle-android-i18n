@@ -2,49 +2,144 @@ package com.github.gradle.android.i18n.export
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.gradle.android.i18n.conf.Configuration.xmlMapper
-import com.github.gradle.android.i18n.model.StringResources
+import com.github.gradle.android.i18n.model.*
 import org.gradle.api.Project
+import java.io.File
 import java.io.OutputStream
 import java.nio.file.Paths
 
 /**
  * Android `xml` string resources exporter.
+ *
+ * This class implements loading resources from the `*strings.xml` files of the project.
+ *
+ * The implementation of writing to an output file is left to concrete classes.
  */
 abstract class AbstractExporter(private val project: Project) {
-
-    private val resFolderPattern = "values(:?-(.*))?".toRegex()
 
     /**
      * Exports the `xml` android string resources to the given output stream.
      */
     abstract fun export(outputStream: OutputStream, defaultLocale: String)
 
-    protected fun loadProjectResources(defaultLocale: String): List<StringResources> {
+    protected fun loadProjectResources(defaultLocale: String): ProjectData =
+        project.deserializeResources(defaultLocale).toProjectData()
+}
 
-        val resources = mutableListOf<StringResources>()
+private fun Project.deserializeResources(defaultLocale: String): Map<Project, List<StringResources>> {
 
-        Paths.get(project.projectDir.absolutePath, "src", "main", "res")
-            .toFile()
-            .walkTopDown()
-            .maxDepth(1)
-            .filter { it.isDirectory && resFolderPattern.matches(it.name) }
-            .sortedBy { it.path }
-            .forEach { directory ->
-                val locale = resFolderPattern.matchEntire(directory.name)!!.groupValues[2]
-                val resourcesFile = directory.walkTopDown().maxDepth(1).first { file -> file.name == "strings.xml" }
-                val stringResources = xmlMapper.readValue<StringResources>(resourcesFile.inputStream())
+    val result = mutableMapOf<Project, List<StringResources>>()
 
-                val resourceToAdd = if (locale.isBlank()) {
-                    stringResources.copy(locale = defaultLocale, defaultLocale = true)
-                } else {
-                    stringResources.copy(locale = locale, defaultLocale = false)
-                }
+    forEachModule { moduleProject ->
+        val resources = moduleResources(moduleProject.projectDir.absolutePath, defaultLocale)
+        if (resources.isNotEmpty()) {
+            result[moduleProject] = resources
+        }
+    }
 
-                resources.add(resourceToAdd)
-            }
+    return result
+}
 
-        return resources
+/**
+ * Apply a callback to each module project that is a child of the receiver.
+ *
+ * Given a project `rootProject` with the following structure:
+ *
+ * ```
+ * :app
+ * :features:feature1
+ * :features:feature2
+ * :library:library1
+ * :library:library2
+ * ```
+ *
+ * Calling `rootProject.forEachModule(callback) will apply the callback
+ * to `app`, `feature1`, `feature2`, `library1` and `library2`
+ * but not to `features` and `library` that are also considered by Gradle as child projects.
+ */
+private fun Project.forEachModule(callback: (Project) -> Unit) {
+    if (this.childProjects.isEmpty()) {
+        callback(this)
+    } else {
+        this.childProjects.forEach { (_, childProj) ->
+            childProj.forEachModule(callback)
+        }
     }
 }
 
-internal val String?.unescapeQuotes: String? get() = this?.replace("\\'", "'")
+private fun Map<Project, List<StringResources>>.toProjectData(): ProjectData {
+
+    val modules = map { (moduleProj, resources) ->
+        val moduleDataName = moduleProj.path
+            .replace("^:".toRegex(), "")
+            .replace(':', '-')
+            .let { name ->
+                if (name.isNotEmpty()) name
+                else "android-i18n"
+            }
+        val translations = resources.map { it.toTranslationData() }
+        ModuleData(moduleDataName, translations)
+    }
+    return ProjectData(modules)
+}
+
+private fun StringResources.toTranslationData(): TranslationData {
+    val fromStrings = strings.map { it.toStringData() }
+    val fromPlurals = plurals.flatMap { it.toStringDataList() }
+    val stringDataList = fromStrings + fromPlurals
+    return TranslationData(locale, stringDataList)
+}
+
+private fun XmlResource.toStringData(): StringData = StringData(name, text?.unescapeQuotes)
+
+private fun XmlResources.toStringDataList(): List<StringData> = items.map {
+    val namePrefix =
+        if (name.isBlank()) ""
+        else "${name}:"
+    StringData(namePrefix + it.quantity, it.text?.unescapeQuotes)
+}
+
+private fun moduleResources(
+    modulePath: String,
+    defaultLocale: String
+): List<StringResources> {
+
+    val resFolderPattern = "values(-(.*))?".toRegex()
+
+    val resources = mutableListOf<StringResources>()
+    Paths.get(modulePath, "src", "main", "res")
+        .toFile()
+        .walkTopDown()
+        .maxDepth(1)
+        .filter { it.isDirectory && resFolderPattern.matches(it.name) }
+        .sortedBy { it.path }
+        .map { resourcesInDirectory(it, resFolderPattern, defaultLocale) }
+        .filter { it.strings.isNotEmpty() || it.plurals.isNotEmpty() }
+        .forEach { resources.add(it) }
+    return resources
+}
+
+private fun resourcesInDirectory(
+
+    directory: File,
+    resFolderPattern: Regex,
+    defaultLocale: String
+
+): StringResources {
+
+    val locale = resFolderPattern.matchEntire(directory.name)!!.groupValues[2]
+
+    return directory.walkTopDown()
+        .maxDepth(1)
+        .firstOrNull { file -> file.name.endsWith("strings.xml") }
+        ?.let { stringsFile -> xmlMapper.readValue<StringResources>(stringsFile.inputStream()) }
+        ?.let { stringResources ->
+            if (locale.isBlank()) {
+                stringResources.copy(locale = defaultLocale, defaultLocale = true)
+            } else {
+                stringResources.copy(locale = locale, defaultLocale = false)
+            }
+        } ?: StringResources()
+}
+
+internal val String.unescapeQuotes: String get() = this.replace("\\'", "'")

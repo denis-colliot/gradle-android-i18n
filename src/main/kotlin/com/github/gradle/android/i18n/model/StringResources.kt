@@ -6,7 +6,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement
 
 /**
- * Android resources structure.
+ * Android resources structure. Represents a `strings.xml` file.
  */
 @JacksonXmlRootElement(localName = "resources")
 data class StringResources(

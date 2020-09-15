@@ -1,65 +1,56 @@
 package com.github.gradle.android.i18n.export
 
+import com.github.gradle.android.i18n.model.*
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.gradle.api.Project
 import java.io.OutputStream
 
+/**
+ * An Exporter that reads Android string resources in a Project and writes an Excel spreadsheet.
+ *
+ * This class defines how to export the resources ⇒ to and Excel workbook.
+ * The parent class [AbstractExporter] defines which resources to export.
+ */
 class XlsExporter(project: Project) : AbstractExporter(project) {
 
     override fun export(outputStream: OutputStream, defaultLocale: String) {
-
-        // Workbook creation.
-        val workbook = XSSFWorkbook()
-        val sheet = workbook.createSheet("android-i18n")
-
-        // Header row.
-        mapToRows(defaultLocale).entries.forEachIndexed { entryIndex, entryRow ->
-            val (entryKey, entryValues) = entryRow
-            val sheetRow = sheet.createRow(entryIndex)
-            val keyCell = sheetRow.createCell(0)
-            keyCell.setCellValue(entryKey)
-            entryValues.forEachIndexed { valueIndex, valueText ->
-                val valueCell = sheetRow.createCell(valueIndex + 1)
-                valueCell.setCellValue(valueText)
-            }
-        }
-
-        workbook.write(outputStream)
-    }
-
-    private fun mapToRows(defaultLocale: String): Map<String, List<String>> {
-
-        val rows = mutableMapOf<String, MutableList<String>>()
-
-        val loadedResources = loadProjectResources(defaultLocale)
-
-        rows["key"] = loadedResources.map { it.locale }.toMutableList()
-
-        loadedResources.forEach { stringResources ->
-
-            stringResources.strings.forEach {
-                val key = it.name ?: ""
-                val value = it.text.unescapeQuotes ?: ""
-                rows.putItem(key, value)
-            }
-
-            stringResources.plurals.forEach { plural ->
-                plural.items.forEach { pluralItem ->
-                    val key = "${plural.name}:${pluralItem.quantity}"
-                    val value = pluralItem.text.unescapeQuotes ?: ""
-                    rows.putItem(key, value)
-                }
-            }
-        }
-
-        return rows
+        loadProjectResources(defaultLocale)
+            .toWorkbook()
+            .write(outputStream)
     }
 }
 
-private fun <K, V> MutableMap<K, MutableList<V>>.putItem(key: K, value: V) {
-    if (!this.containsKey(key)) {
-        this[key] = mutableListOf(value)
-    } else {
-        this[key]?.add(value)
+private fun ProjectData.toWorkbook(): XSSFWorkbook {
+    val workbook = XSSFWorkbook()
+    modules.forEach { moduleData ->
+        val sheet = workbook.createSheet(moduleData.name)
+
+        // Header row: "key" | lang1 | lang2
+        val headerRow = sheet.createRow(0)
+        headerRow.createCell(0).setCellValue("key")
+        moduleData.translations.forEachIndexed { langIndex, translationData ->
+            val colIndex = langIndex + 1
+            headerRow.createCell(colIndex).setCellValue(translationData.locale)
+        }
+
+        // Other rows:
+        // name1 | lang1-value1 | lang2-value1
+        // name2 | lang1-value2 | lang2-value2
+        val firstTranslation = moduleData.translations.first()
+        firstTranslation.stringDataList.forEachIndexed { firstLangStringDataIndex, firstLangStringData ->
+            val rowIndex = firstLangStringDataIndex + 1
+            val row = sheet.createRow(rowIndex)
+
+            // First cell: name1
+            row.createCell(0).setCellValue(firstLangStringData.name)
+
+            // Next cells: lang1-value1 | lang2-value1
+            moduleData.translations.forEachIndexed { langIndex, translationData ->
+                val colIndex = langIndex + 1
+                val stringData = translationData.stringDataList[firstLangStringDataIndex]
+                row.createCell(colIndex).setCellValue(stringData.text)
+            }
+        }
     }
+    return workbook
 }
