@@ -39,7 +39,7 @@ androidI18n {
    sourceFile = '/path/to/source/file.xls'
    
    // Default android locale corresponding to 'values' directory.
-   defaultLocale = 'en'
+   defaultLocale = 'fr'
 }
 ```
 
@@ -59,7 +59,7 @@ In this mode, the **export task** `androidI18nExport` will create an Excel sprea
 <td colspan="3">
 <pre>
 $ ./gradlew app:androidI18nExport
-> Task :androidI18nExport
+> Task :app:androidI18nExport
 Resources were exported to:
 /path/to/project/app/build/i18n_2020-09-15_11-50-50.xlsx
 BUILD SUCCESSFUL in 6s
@@ -77,7 +77,7 @@ project
             └── res
                 ├── values
                 │   └── strings.xml
-                └── values-fr
+                └── values-en
                     └── strings.xml
 </pre>
 </td>
@@ -85,7 +85,7 @@ project
 <td>⇒</td>
 
 <td>
-<img src="README_files/input-xlsx.png" width="700px">
+<img src="README_files/single-xlsx.png" width="700px">
 </td>
 
 </tr>
@@ -98,7 +98,7 @@ The **import task** `androidI18nImport` will take an Excel spreadsheet and gener
 <tr>
 <td colspan="3">
 <pre>
-$ gradlew app:androidI18nImport
+$ gradlew app:androidI18nImport -PTODO
 BUILD SUCCESSFUL in 28s
 </pre>
 </td>
@@ -107,7 +107,7 @@ BUILD SUCCESSFUL in 28s
 <tr>
 
 <td>
-<img src="README_files/input-xlsx.png" width="700px">
+<img src="README_files/single-xlsx.png" width="700px">
 </td>
 
 <td>⇒</td>
@@ -121,7 +121,7 @@ project
             └── res
                 ├── values
                 │   └── strings.xml
-                └── values-fr
+                └── values-en
                     └── strings.xml
 </pre>
 </td>
@@ -131,7 +131,96 @@ project
 
 ## Multi module gradle projects
 
-TODO
+When applied to a project with several child modules, the plugin operates in the **multi module** mode.
+
+In this mode, the **export task** `androidI18nExport` will create an Excel spreadsheet with several sheets named after the child modules. Each sheet corresponds to a child module and contains all the translation keys of this module and the corresponding texts for each language.
+
+<table>
+<tr>
+<td colspan="3">
+<pre>
+$ ./gradlew :androidI18nExport
+> Task :androidI18nExport
+Resources were exported to:
+/path/to/project/build/i18n_2020-09-15_14-13-00.xlsx
+BUILD SUCCESSFUL in 7s
+</pre>
+</td>
+</tr>
+
+<tr>
+<td>
+<pre>
+project-multi
+├── app
+│   └── src
+│       └── main
+│           └── res
+│               ├── values
+│               │   └── strings.xml
+│               └── values-en
+│                   └── strings.xml
+└── features
+    └── feature1
+        └── src
+            └── main
+                └── res
+                    ├── values
+                    │   └── feature1_strings.xml
+                    └── values-en
+                        └── feature1_strings.xml
+</pre>
+</td>
+
+<td>⇒</td>
+
+<td><img src="README_files/multi-xlsx.png" width="600px"></td>
+</tr>
+</table>
+
+The **import task** `androidI18nImport` will take an Excel spreadsheet and generate several sets of `strings.xml` files (one set by module, then one file by language) into the directory structure of each child module.
+
+<table>
+<tr>
+<td colspan="3">
+<pre>
+$ ./gradlew :androidI18nImport -PandroidI18n.sourceFile=/path/to/project/build/i18n_2020-09-15_14-13-00.xlsx
+BUILD SUCCESSFUL in 4s
+</pre>
+</td>
+</tr>
+
+<tr>
+
+<td><img src="README_files/multi-xlsx.png" width="600px"></td>
+
+<td>⇒</td>
+
+<td>
+<pre>
+project-multi
+├── app
+│   └── src
+│       └── main
+│           └── res
+│               ├── values
+│               │   └── strings.xml
+│               └── values-en
+│                   └── strings.xml
+└── features
+    └── feature1
+        └── src
+            └── main
+                └── res
+                    ├── values
+                    │   └── feature1_strings.xml
+                    └── values-en
+                        └── feature1_strings.xml
+</pre>
+</td>
+
+</tr>
+</table>
 
 # Supported sources
 
