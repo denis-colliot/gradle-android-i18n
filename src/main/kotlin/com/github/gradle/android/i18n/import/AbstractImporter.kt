@@ -1,13 +1,7 @@
 package com.github.gradle.android.i18n.import
 
-import com.github.gradle.android.i18n.conf.Configuration.xmlMapper
-import com.github.gradle.android.i18n.model.StringResources
-import com.github.gradle.android.i18n.model.XmlResource
-import com.github.gradle.android.i18n.model.XmlResources
 import org.gradle.api.Project
-import java.io.File
 import java.io.InputStream
-import java.nio.file.Paths
 
 private val XML_KEY_ILLEGAL_CHARS = ".*[\\s${Regex.escape("+-*/\\;,'()[]{}!?=@|#~&\"^%<>")}].*".toRegex()
 
