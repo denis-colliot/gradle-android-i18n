@@ -10,8 +10,8 @@
     <string name="trad_key_key.8"></string>
     <string name="trad_key_key.9">Texte de l\'application écrit en français n°9</string>
     <plurals name="trad_key_key.7">
+        <item quantity="many">Plein de pommes</item>
         <item quantity="one">Une pomme</item>
         <item quantity="two">Deux pommes</item>
-        <item quantity="many">Plein de pommes</item>
     </plurals>
 </resources>

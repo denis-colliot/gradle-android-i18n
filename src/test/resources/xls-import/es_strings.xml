@@ -10,8 +10,8 @@
     <string name="trad_key_key.8"></string>
     <string name="trad_key_key.9">Texto de la aplicación escrito en español n°9</string>
     <plurals name="trad_key_key.7">
+        <item quantity="many">Muchas manzanas</item>
         <item quantity="one">Una manzana</item>
         <item quantity="two">Dos manzanas</item>
-        <item quantity="many">Muchas manzanas</item>
     </plurals>
 </resources>

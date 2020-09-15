@@ -182,8 +182,16 @@ private fun TranslationData.toStringResources(config: ImportConfig): StringResou
     return StringResources(
         locale,
         locale == config.defaultLocale,
-        singularStringDataList?.toSingularXmlResourceList()?.toMutableList() ?: mutableListOf(), // TODO sorted
-        pluralStringDataList?.toPluralXmlResourcesList()?.toMutableList() ?: mutableListOf() // TODO sorted
+        singularStringDataList
+            ?.sortedBy { (name, _) -> name }
+            ?.toSingularXmlResourceList()
+            ?.toMutableList()
+            ?: mutableListOf(),
+        pluralStringDataList
+            ?.sortedBy { (name, _) -> name }
+            ?.toPluralXmlResourcesList()
+            ?.toMutableList()
+            ?: mutableListOf()
     )
 }
 
