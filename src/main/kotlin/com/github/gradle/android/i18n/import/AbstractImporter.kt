@@ -57,7 +57,7 @@ internal fun String.cleanUpTranslatedText(): String {
     val sharpCount = mutableTranslation.toCharArray().filter { it == ARG_PLACEHOLDER }.count()
 
     if (sharpCount == 1) {
-        mutableTranslation = mutableTranslation.replace("${ARG_PLACEHOLDER}".toRegex(),
+        mutableTranslation = mutableTranslation.replace("$ARG_PLACEHOLDER".toRegex(),
             XML_SINGLE_ARG
         )
     } else if (sharpCount > 1) {
