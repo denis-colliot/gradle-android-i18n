@@ -19,12 +19,12 @@ class XlsImporter(private val project: Project) : AbstractImporter(project) {
 
     override fun generate(inputStream: InputStream, config: ImportConfig) {
 
-        val workbook = WorkbookFactory.create(inputStream) // TODO .use
-
-        val projectData = if (project.isSingleModule()) {
-            workbook.toSingleModuleProjectData(config)
-        } else {
-            workbook.toMultiModuleProjectData()
+        val projectData = WorkbookFactory.create(inputStream).use { workbook ->
+            if (project.isSingleModule()) {
+                workbook.toSingleModuleProjectData(config)
+            } else {
+                workbook.toMultiModuleProjectData()
+            }
         }
 
         val stringResourcesByPath = projectData.toStringResourcesByPath(project.projectDir, config)
