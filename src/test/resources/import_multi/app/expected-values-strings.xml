@@ -1,14 +1,12 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
     <string name="trad_key_key.1">Texte de l\'application écrit en français n°1</string>
-    <string name="trad_key_key.10">Autre texte</string>
     <string name="trad_key_key.2">Texte de l\'application écrit en français n°2</string>
     <string name="trad_key_key.3">Texte de l\'application avec un paramètre %s</string>
     <string name="trad_key_key.4">Texte de l\'application avec deux paramètres %1$s et %2$s</string>
     <string name="trad_key_key.5">Texte avec "guillemets" internes</string>
     <string name="trad_key_key.6">Texte avec nombre %1$d</string>
     <string name="trad_key_key.8"></string>
-    <string name="trad_key_key.9">Texte de l\'application écrit en français n°9</string>
     <plurals name="trad_key_key.7">
         <item quantity="many">Plein de pommes</item>
         <item quantity="one">Une pomme</item>

@@ -39,12 +39,188 @@ androidI18n {
    sourceFile = '/path/to/source/file.xls'
    
    // Default android locale corresponding to 'values' directory.
-   defaultLocale = 'en'
+   defaultLocale = 'fr'
 }
 ```
 
 An empty (or blank) `sourceFile` simply disabled plugin execution (convenient for Continuous Integration).
 
+# Usage
+
+## Single module Gradle projects
+
+When applied to the configuration of a single module eg `app`, the plugin operates in *single module* mode.
+
+In this mode, the **export task** `androidI18nExport` will create an Excel spreadsheet with one sheet named `android-i18n` that contains all translation keys and the corresponding texts for each language.
+
+<table>
+
+<tr>
+<td colspan="3">
+<pre>
+$ ./gradlew app:androidI18nExport
+> Task :app:androidI18nExport
+Resources were exported to:
+/path/to/project/app/build/i18n_2020-09-15_11-50-50.xlsx
+BUILD SUCCESSFUL in 6s
+</pre>
+</td>
+</tr>
+
+<tr>
+<td>
+<pre>
+project
+└── app
+    └── src
+        └── main
+            └── res
+                ├── values
+                │   └── strings.xml
+                └── values-en
+                    └── strings.xml
+</pre>
+</td>
+
+<td>⇒</td>
+
+<td>
+<img src="README_files/single-xlsx.png" width="700px">
+</td>
+
+</tr>
+</table>
+
+The **import task** `androidI18nImport` will take an Excel spreadsheet and generate a single set of `strings.xml` files (one file by language) into the directory structure of the single module.
+
+<table>
+
+<tr>
+<td colspan="3">
+<pre>
+$ gradlew app:androidI18nImport -PandroidI18n.sourceFile=/path/to/project/build/i18n_2020-09-15_11-50-50.xlsx
+BUILD SUCCESSFUL in 28s
+</pre>
+</td>
+</tr>
+
+<tr>
+
+<td>
+<img src="README_files/single-xlsx.png" width="700px">
+</td>
+
+<td>⇒</td>
+
+<td>
+<pre>
+project
+└── app
+    └── src
+        └── main
+            └── res
+                ├── values
+                │   └── strings.xml
+                └── values-en
+                    └── strings.xml
+</pre>
+</td>
+
+</tr>
+</table>
+
+## Multi module gradle projects
+
+When applied to a project with several child modules, the plugin operates in the **multi module** mode.
+
+In this mode, the **export task** `androidI18nExport` will create an Excel spreadsheet with several sheets named after the child modules. Each sheet corresponds to a child module and contains all the translation keys of this module and the corresponding texts for each language.
+
+<table>
+<tr>
+<td colspan="3">
+<pre>
+$ ./gradlew :androidI18nExport
+> Task :androidI18nExport
+Resources were exported to:
+/path/to/project/build/i18n_2020-09-15_14-13-00.xlsx
+BUILD SUCCESSFUL in 7s
+</pre>
+</td>
+</tr>
+
+<tr>
+<td>
+<pre>
+project-multi
+├── app
+│   └── src
+│       └── main
+│           └── res
+│               ├── values
+│               │   └── strings.xml
+│               └── values-en
+│                   └── strings.xml
+└── features
+    └── feature1
+        └── src
+            └── main
+                └── res
+                    ├── values
+                    │   └── feature1_strings.xml
+                    └── values-en
+                        └── feature1_strings.xml
+</pre>
+</td>
+
+<td>⇒</td>
+
+<td><img src="README_files/multi-xlsx.png" width="600px"></td>
+</tr>
+</table>
+
+The **import task** `androidI18nImport` will take an Excel spreadsheet and generate several sets of `strings.xml` files (one set by module, then one file by language) into the directory structure of each child module.
+
+<table>
+<tr>
+<td colspan="3">
+<pre>
+$ ./gradlew :androidI18nImport -PandroidI18n.sourceFile=/path/to/project/build/i18n_2020-09-15_14-13-00.xlsx
+BUILD SUCCESSFUL in 4s
+</pre>
+</td>
+</tr>
+
+<tr>
+
+<td><img src="README_files/multi-xlsx.png" width="600px"></td>
+
+<td>⇒</td>
+
+<td>
+<pre>
+project-multi
+├── app
+│   └── src
+│       └── main
+│           └── res
+│               ├── values
+│               │   └── strings.xml
+│               └── values-en
+│                   └── strings.xml
+└── features
+    └── feature1
+        └── src
+            └── main
+                └── res
+                    ├── values
+                    │   └── feature1_strings.xml
+                    └── values-en
+                        └── feature1_strings.xml
+</pre>
+</td>
+
+</tr>
+</table>
 
 # Supported sources
 

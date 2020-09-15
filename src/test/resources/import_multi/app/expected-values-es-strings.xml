@@ -1,14 +1,12 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
     <string name="trad_key_key.1">Texto de la aplicación escrito en español n°1</string>
-    <string name="trad_key_key.10">Otro texto</string>
     <string name="trad_key_key.2">Texto de la aplicación escrito en español n°2</string>
     <string name="trad_key_key.3">Texto de la aplicación con un parámetro %s</string>
     <string name="trad_key_key.4">Texto de la aplicación con dos parámetros %1$s y %2$s</string>
     <string name="trad_key_key.5">Texto con "citas" internas</string>
     <string name="trad_key_key.6">Texto con número %1$d</string>
     <string name="trad_key_key.8"></string>
-    <string name="trad_key_key.9">Texto de la aplicación escrito en español n°9</string>
     <plurals name="trad_key_key.7">
         <item quantity="many">Muchas manzanas</item>
         <item quantity="one">Una manzana</item>
