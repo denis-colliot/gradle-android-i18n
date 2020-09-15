@@ -24,7 +24,7 @@ class XlsImporter(private val project: Project) : AbstractImporter(project) {
         val projectData = if (project.isSingleModule()) {
             workbook.toSingleModuleProjectData(config)
         } else {
-            workbook.toMultiModuleProjectData(config)
+            workbook.toMultiModuleProjectData()
         }
 
         val stringResourcesByPath = projectData.toStringResourcesByPath(project.projectDir, config)
@@ -36,7 +36,7 @@ private fun Project.isSingleModule(): Boolean {
     return this.childProjects.size <= 1
 }
 
-private fun Workbook.toMultiModuleProjectData(config: ImportConfig): ProjectData {
+private fun Workbook.toMultiModuleProjectData(): ProjectData {
     val moduleDataList = this.map { sheet: Sheet ->
         val stringDataByLocale = sheet.toList().toStringDataByLocale()
         val translationDataList = stringDataByLocale.keys.map { locale ->
