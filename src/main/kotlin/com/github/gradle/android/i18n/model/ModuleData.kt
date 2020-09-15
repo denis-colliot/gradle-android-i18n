@@ -9,4 +9,8 @@ package com.github.gradle.android.i18n.model
 data class ModuleData(
     val name: String,
     val translations: List<TranslationData>
-)
+) {
+    companion object {
+        const val DEFAULT_NAME: String = "android-i18n"
+    }
+}

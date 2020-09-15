@@ -76,7 +76,7 @@ private fun Map<Project, List<StringResources>>.toProjectData(): ProjectData {
             .replace(':', '-')
             .let { name ->
                 if (name.isNotEmpty()) name
-                else "android-i18n"
+                else ModuleData.DEFAULT_NAME
             }
         val translations = resources.map { it.toTranslationData() }
         ModuleData(moduleDataName, translations)

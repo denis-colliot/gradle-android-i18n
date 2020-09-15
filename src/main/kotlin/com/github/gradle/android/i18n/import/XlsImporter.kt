@@ -53,7 +53,7 @@ private fun Workbook.toSingleModuleProjectData(config: ImportConfig): ProjectDat
     val translationDataList = stringDataByLocale.keys.map { locale ->
         TranslationData(locale, stringDataByLocale[locale] as List<StringData>)
     }
-    val moduleData = ModuleData("android-gradle-i18n", translationDataList)
+    val moduleData = ModuleData(ModuleData.DEFAULT_NAME, translationDataList)
     return ProjectData(listOf(moduleData))
 }
 
