@@ -154,7 +154,7 @@ open class AndroidI18nPluginExtension(
         if (dispatchFrom != null) {
             println("Dispatching keys from $dispatchFrom...")
             val projData = project.deserializeResources(defaultLocale).toProjectData()
-            val projDataWithKeysDispatched = projData.withKeysDispatched(dispatchFromProp)
+            val projDataWithKeysDispatched = projData.deduplicated(dispatchFromProp)
             projDataWithKeysDispatched.toStringResourcesByPath(project.projectDir, defaultLocale).write()
             println("Resources have been written to $project.projectDir")
         }
