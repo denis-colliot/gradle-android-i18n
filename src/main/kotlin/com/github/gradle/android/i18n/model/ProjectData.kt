@@ -38,6 +38,18 @@ data class ProjectData(val modules: List<ModuleData>) {
             .partition { it.name == sourceModuleName }
             .let { (sourceModules, otherModules) -> sourceModules.first() to otherModules }
 
+        val sourceModuleDeduplicated =
+            sourceModule.copy(translations = sourceModule.translations.map { sourceTranslationData ->
+                sourceTranslationData.copy(stringDataList = sourceTranslationData.stringDataList.filter { sourceString ->
+                    otherModules.none { otherModule ->
+                        otherModule.translations
+                            .find { it.locale == sourceTranslationData.locale }
+                            ?.stringDataList
+                            ?.any { it.name == sourceString.name } == true
+                    }
+                })
+            })
+
         val otherModulesOverriden = otherModules.map { otherModule ->
             otherModule.copy(translations = otherModule.translations.map { otherTranslation ->
                 otherTranslation.copy(stringDataList = otherTranslation.stringDataList.map { string ->
@@ -52,6 +64,7 @@ data class ProjectData(val modules: List<ModuleData>) {
                 })
             })
         }
-        return ProjectData(listOf(sourceModule) + otherModulesOverriden)
+
+        return ProjectData(listOf(sourceModuleDeduplicated) + otherModulesOverriden)
     }
 }

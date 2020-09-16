@@ -62,14 +62,12 @@ class ProjectDataTest {
                             TranslationData(
                                 "fr",
                                 listOf(
-                                    StringData("key1", "valeur1-surchargée"), // TODO: Source key removal
                                     StringData("key3", "valeur3")
                                 )
                             ),
                             TranslationData(
                                 "en",
                                 listOf(
-                                    StringData("key1", "value1-overriden"), // TODO: Source key removal
                                     StringData("key3", "value3")
                                 )
                             )
