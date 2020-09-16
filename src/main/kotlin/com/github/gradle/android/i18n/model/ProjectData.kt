@@ -38,33 +38,39 @@ data class ProjectData(val modules: List<ModuleData>) {
             .partition { it.name == sourceModuleName }
             .let { (sourceModules, otherModules) -> sourceModules.first() to otherModules }
 
-        val sourceModuleDeduplicated =
-            sourceModule.copy(translations = sourceModule.translations.map { sourceTranslationData ->
-                sourceTranslationData.copy(stringDataList = sourceTranslationData.stringDataList.filter { sourceString ->
-                    otherModules.none { otherModule ->
-                        otherModule.translations
-                            .find { it.locale == sourceTranslationData.locale }
-                            ?.stringDataList
-                            ?.any { it.name == sourceString.name } == true
-                    }
-                })
-            })
-
-        val otherModulesOverriden = otherModules.map { otherModule ->
-            otherModule.copy(translations = otherModule.translations.map { otherTranslation ->
-                otherTranslation.copy(stringDataList = otherTranslation.stringDataList.map { string ->
-                    string.copy(
-                        text = sourceModule.translations
-                            .find { it.locale == otherTranslation.locale }
-                            ?.stringDataList
-                            ?.find { it.name == string.name }
-                            ?.text
-                            ?: string.text
-                    )
-                })
-            })
-        }
+        val sourceModuleDeduplicated = sourceModule.withoutDuplicateKeys(otherModules)
+        val otherModulesOverriden = otherModules.withOverridenValues(sourceModule)
 
         return ProjectData(listOf(sourceModuleDeduplicated) + otherModulesOverriden)
+    }
+
+    private fun ModuleData.withoutDuplicateKeys(
+        otherModules: List<ModuleData>
+    ): ModuleData = copy(translations = translations.map { sourceTranslationData ->
+        sourceTranslationData.copy(stringDataList = sourceTranslationData.stringDataList.filter { sourceString ->
+            otherModules.none { otherModule ->
+                otherModule.translations
+                    .find { it.locale == sourceTranslationData.locale }
+                    ?.stringDataList
+                    ?.any { it.name == sourceString.name } == true
+            }
+        })
+    })
+
+    private fun List<ModuleData>.withOverridenValues(
+        sourceModule: ModuleData
+    ): List<ModuleData> = this.map { otherModule ->
+        otherModule.copy(translations = otherModule.translations.map { otherTranslation ->
+            otherTranslation.copy(stringDataList = otherTranslation.stringDataList.map { string ->
+                string.copy(
+                    text = sourceModule.translations
+                        .find { it.locale == otherTranslation.locale }
+                        ?.stringDataList
+                        ?.find { it.name == string.name }
+                        ?.text
+                        ?: string.text
+                )
+            })
+        })
     }
 }
