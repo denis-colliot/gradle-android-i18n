@@ -33,6 +33,25 @@ data class ProjectData(val modules: List<ModuleData>) {
      * ```
      */
     fun deduplicated(sourceModuleName: String): ProjectData {
-        TODO("Not yet implemented")
+
+        val (sourceModule, otherModules) = modules
+            .partition { it.name == sourceModuleName }
+            .let { (sourceModules, otherModules) -> sourceModules.first() to otherModules }
+
+        val otherModulesOverriden = otherModules.map { otherModule ->
+            otherModule.copy(translations = otherModule.translations.map { otherTranslation ->
+                otherTranslation.copy(stringDataList = otherTranslation.stringDataList.map { string ->
+                    string.copy(
+                        text = sourceModule.translations
+                            .find { it.locale == otherTranslation.locale }
+                            ?.stringDataList
+                            ?.find { it.name == string.name }
+                            ?.text
+                            ?: string.text
+                    )
+                })
+            })
+        }
+        return ProjectData(listOf(sourceModule) + otherModulesOverriden)
     }
 }

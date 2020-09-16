@@ -6,4 +6,4 @@ package com.github.gradle.android.i18n.model
  * @param stringDataList a list of translated labels. All of these are in the considered language:
  * if [locale] is `fr`, all [StringData]s are in french.
  */
-class TranslationData(val locale: String, val stringDataList: List<StringData>)
+data class TranslationData(val locale: String, val stringDataList: List<StringData>)
