@@ -26,7 +26,7 @@ abstract class AbstractExporter(private val project: Project) {
         project.deserializeResources(defaultLocale).toProjectData()
 }
 
-private fun Project.deserializeResources(defaultLocale: String): Map<Project, List<StringResources>> {
+fun Project.deserializeResources(defaultLocale: String): Map<Project, List<StringResources>> {
 
     val result = mutableMapOf<Project, List<StringResources>>()
 
@@ -67,7 +67,7 @@ private fun Project.forEachModule(callback: (Project) -> Unit) {
     }
 }
 
-private fun Map<Project, List<StringResources>>.toProjectData(): ProjectData {
+fun Map<Project, List<StringResources>>.toProjectData(): ProjectData {
 
     val modules = map { (moduleProj, resources) ->
         val moduleDataName = moduleProj.path

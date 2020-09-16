@@ -1,8 +1,12 @@
 package com.github.gradle.android.i18n
 
 import com.github.gradle.android.i18n.export.XlsExporter
+import com.github.gradle.android.i18n.export.deserializeResources
+import com.github.gradle.android.i18n.export.toProjectData
 import com.github.gradle.android.i18n.import.ImportConfig
 import com.github.gradle.android.i18n.import.XlsImporter
+import com.github.gradle.android.i18n.import.toStringResourcesByPath
+import com.github.gradle.android.i18n.import.write
 import jcifs.smb.SmbFile
 import org.gradle.api.Project
 import java.io.File
@@ -50,6 +54,8 @@ open class AndroidI18nPluginExtension(
      * Default is `.*` to read all sheets.
      */
     var importSheetNameRegex: String = "^.*$"
+
+    var dispatchFrom: String? = null
 
     /**
      * Imports the i18n translation resources from the configured [sourceFile].
@@ -140,6 +146,18 @@ open class AndroidI18nPluginExtension(
             .forEach {
                 jcifs.Config.setProperty(it.key.substringAfter('.'), it.value.toString().trim())
             }
+    }
+
+    fun dispatchKeys() {
+        val dispatchFromProp = dispatchFrom ?: project.findProperty("androidI18n.dispatchFrom")
+        val dispatchFrom = dispatchFromProp as? String
+        if (dispatchFrom != null) {
+            println("Dispatching keys from $dispatchFrom...")
+            val projData = project.deserializeResources(defaultLocale).toProjectData()
+            val projDataWithKeysDispatched = projData.withKeysDispatched(dispatchFromProp)
+            projDataWithKeysDispatched.toStringResourcesByPath(project.projectDir, defaultLocale).write()
+            println("Resources have been written to $project.projectDir")
+        }
     }
 
     companion object {

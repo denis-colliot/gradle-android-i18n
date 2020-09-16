@@ -27,7 +27,10 @@ class XlsImporter(private val project: Project) : AbstractImporter(project) {
             }
         }
 
-        val stringResourcesByPath = projectData.toStringResourcesByPath(project.projectDir, config)
+        val stringResourcesByPath = projectData.toStringResourcesByPath(
+            project.projectDir,
+            config.defaultLocale
+        )
         stringResourcesByPath.write()
     }
 }
@@ -139,9 +142,9 @@ private fun readWorkbookRows(config: ImportConfig, workbook: Workbook): List<Row
     return result
 }
 
-private fun ProjectData.toStringResourcesByPath(
+fun ProjectData.toStringResourcesByPath(
     baseDir: File,
-    config: ImportConfig
+    defaultLocale: String
 ): Map<Path, StringResources> {
     val isMultiModule = this.modules.size > 1
     return this.modules.map { moduleData ->
@@ -151,12 +154,12 @@ private fun ProjectData.toStringResourcesByPath(
     }.flatMap { (resDirPath, moduleData) ->
         moduleData.translations.map { translationData ->
             val valuesPath =
-                if (translationData.locale == config.defaultLocale) "values"
+                if (translationData.locale == defaultLocale) "values"
                 else "values-${translationData.locale}"
             val stringsFileName = if (isMultiModule) moduleData.stringsFileName() else "strings.xml"
             val stringsFileSubPath = Paths.get(valuesPath, stringsFileName)
             val stringsFileFullPath = resDirPath.resolve(stringsFileSubPath)
-            val stringResources = translationData.toStringResources(config)
+            val stringResources = translationData.toStringResources(defaultLocale)
             Pair(stringsFileFullPath, stringResources)
         }
     }.associateBy({ it.first }) { it.second }
@@ -170,7 +173,7 @@ private fun ModuleData.stringsFileName(): String =
 private fun ModuleData.pathRelativeToProj(): String =
     this.name.split(".").joinToString(File.separator)
 
-private fun TranslationData.toStringResources(config: ImportConfig): StringResources {
+private fun TranslationData.toStringResources(defaultLocale: String): StringResources {
 
     val stringDataListByPlurality = this.stringDataList.groupBy {
         it.name?.contains(QUANTITY_SEPARATOR) == true
@@ -181,7 +184,7 @@ private fun TranslationData.toStringResources(config: ImportConfig): StringResou
 
     return StringResources(
         locale,
-        locale == config.defaultLocale,
+        locale == defaultLocale,
         singularStringDataList
             ?.sortedBy { (name, _) -> name }
             ?.toSingularXmlResourceList()
@@ -216,7 +219,7 @@ private fun List<StringData>.toSingularXmlResourceList(): List<XmlResource> =
         XmlResource(name = stringData.name, text = stringData.text)
     }.sortedBy { it.name }
 
-private fun Map<Path, StringResources>.write() {
+fun Map<Path, StringResources>.write() {
     forEach { (path, stringResources) ->
         val outputResFile = path.toFile()
         outputResFile.parentFile.mkdirs()
