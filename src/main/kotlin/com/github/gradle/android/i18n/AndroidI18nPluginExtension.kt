@@ -55,7 +55,7 @@ open class AndroidI18nPluginExtension(
      */
     var importSheetNameRegex: String = "^.*$"
 
-    var dispatchFrom: String? = null
+    var deduplicateFrom: String? = null
 
     /**
      * Imports the i18n translation resources from the configured [sourceFile].
@@ -148,15 +148,19 @@ open class AndroidI18nPluginExtension(
             }
     }
 
-    fun dispatchKeys() {
-        val dispatchFromProp = dispatchFrom ?: project.findProperty("androidI18n.dispatchFrom")
-        val dispatchFrom = dispatchFromProp as? String
-        if (dispatchFrom != null) {
-            println("Dispatching keys from $dispatchFrom...")
+    fun deduplicateKeys() {
+        val deduplicateFromProp = deduplicateFrom ?: project.findProperty("androidI18n.deduplicateFrom")
+        val deduplicateFrom = deduplicateFromProp as? String
+        if (deduplicateFrom != null) {
+            println("Deduplicating keys from $deduplicateFrom...")
             val projData = project.deserializeResources(defaultLocale).toProjectData()
-            val projDataWithKeysDispatched = projData.deduplicated(dispatchFromProp)
-            projDataWithKeysDispatched.toStringResourcesByPath(project.projectDir, defaultLocale).write()
-            println("Resources have been written to $project.projectDir")
+            val deduplicatedProjData = projData.deduplicated(deduplicateFromProp)
+            deduplicatedProjData
+                .toStringResourcesByPath(project.projectDir, defaultLocale)
+                .write()
+            println("Resources have been written to ${project.projectDir}")
+        } else {
+            println("Please supply a value for property `androidI18n.deduplicateFrom`")
         }
     }
 

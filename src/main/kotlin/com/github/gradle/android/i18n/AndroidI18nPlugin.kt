@@ -39,10 +39,10 @@ class AndroidI18nPlugin : Plugin<Project> {
         }
 
         project.tasks.let { task ->
-            task.create("androidI18nDispatch").apply {
+            task.create("androidI18nDeduplicate").apply {
                 doLast {
-                    println("Dispatching android i18n keys from main module")
-                    extension.dispatchKeys()
+                    println("Deduplicate android i18n keys from main module")
+                    extension.deduplicateKeys()
                 }
             }
         }
