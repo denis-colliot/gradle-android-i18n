@@ -1,12 +1,8 @@
 package com.github.gradle.android.i18n
 
 import com.github.gradle.android.i18n.export.XlsExporter
-import com.github.gradle.android.i18n.export.deserializeResources
-import com.github.gradle.android.i18n.export.toProjectData
 import com.github.gradle.android.i18n.import.ImportConfig
 import com.github.gradle.android.i18n.import.XlsImporter
-import com.github.gradle.android.i18n.import.toStringResourcesByPath
-import com.github.gradle.android.i18n.import.write
 import jcifs.smb.SmbFile
 import org.gradle.api.Project
 import java.io.File
