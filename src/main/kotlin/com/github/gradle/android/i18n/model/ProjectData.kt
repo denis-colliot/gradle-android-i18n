@@ -1,5 +1,7 @@
 package com.github.gradle.android.i18n.model
 
+import com.github.gradle.android.i18n.import.cleanUpTranslatedText
+
 /**
  * This class represents a Gradle project in the context of i18n import/export.
  * @param modules a representation of the submodules of the project
@@ -47,14 +49,18 @@ data class ProjectData(val modules: List<ModuleData>) {
     private fun ModuleData.withoutDuplicateKeys(
         otherModules: List<ModuleData>
     ): ModuleData = copy(translations = translations.map { sourceTranslationData ->
-        sourceTranslationData.copy(stringDataList = sourceTranslationData.stringDataList.filter { sourceString ->
-            otherModules.none { otherModule ->
-                otherModule.translations
-                    .find { it.locale == sourceTranslationData.locale }
-                    ?.stringDataList
-                    ?.any { it.name == sourceString.name } == true
-            }
-        })
+        sourceTranslationData.copy(
+            stringDataList = sourceTranslationData.stringDataList
+                .filter { sourceString ->
+                    otherModules.none { otherModule ->
+                        otherModule.translations
+                            .find { it.locale == sourceTranslationData.locale }
+                            ?.stringDataList
+                            ?.any { it.name == sourceString.name } == true
+                    }
+                }.map { (key, text) ->
+                    StringData(key, text?.cleanUpTranslatedText())
+                })
     })
 
     private fun List<ModuleData>.withOverridenValues(
@@ -62,14 +68,13 @@ data class ProjectData(val modules: List<ModuleData>) {
     ): List<ModuleData> = this.map { otherModule ->
         otherModule.copy(translations = otherModule.translations.map { otherTranslation ->
             otherTranslation.copy(stringDataList = otherTranslation.stringDataList.map { string ->
-                string.copy(
-                    text = sourceModule.translations
-                        .find { it.locale == otherTranslation.locale }
-                        ?.stringDataList
-                        ?.find { it.name == string.name }
-                        ?.text
-                        ?: string.text
-                )
+                val text = sourceModule.translations
+                    .find { it.locale == otherTranslation.locale }
+                    ?.stringDataList
+                    ?.find { it.name == string.name }
+                    ?.text
+                    ?: string.text
+                string.copy(text = text?.cleanUpTranslatedText())
             })
         })
     }
