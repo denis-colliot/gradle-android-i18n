@@ -16,7 +16,7 @@ data class ProjectData(val modules: List<ModuleData>) {
      * ```
      * projectData
      * \_app
-     * | \_key1: value1-overriden
+     * | \_key1: value1-app
      * | \_key3: value3
      * \_feature1
      *   \_key1: value1-feature1
@@ -30,7 +30,7 @@ data class ProjectData(val modules: List<ModuleData>) {
      * \_app
      * | \_key3: value3
      * \_feature1
-     *   \_key1: value1-overriden
+     *   \_key1: value1-app
      *   \_key2: value2
      * ```
      */
