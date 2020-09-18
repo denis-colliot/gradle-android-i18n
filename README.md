@@ -23,6 +23,32 @@ The plugin provides the following gradle tasks:
     [...]
     ```
 
+- **`androidI18nDeduplicate`**: remove duplicate keys between a given source module and the other modules in the Gradle project. NB: This task operates on the `*strings.xml` files of the project.
+
+    For example if the project has 2 modules:
+    ```
+    project
+    \_app
+    | \_key1: value1-overriden
+    | \_key3: value3
+    \_feature1
+      \_key1: value1-feature1
+      \_key2: value2
+    ```
+    
+    Calling `androidI18nDeduplicate -PandroidI18n.deduplicateFrom=app` will make it:
+    ```
+    project
+    \_app
+    | \_key3: value3
+    \_feature1
+      \_key1: value1-overriden
+      \_key2: value2
+    ```
+
+    The key `key1` was in both `app` and `feature1` and its value in `app` was `value1-overriden` ⇒ it gets moved into `feature1`, retaining the value it had in `app`.
+
+    But `key3` was only in `app` so it stays in `app`.
 
 # Installation
 
