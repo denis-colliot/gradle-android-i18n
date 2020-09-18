@@ -1,16 +1,14 @@
 package com.github.gradle.android.i18n.import
 
-import com.github.gradle.android.i18n.conf.Configuration
 import com.github.gradle.android.i18n.model.*
+import com.github.gradle.android.i18n.toStringResourcesByPath
+import com.github.gradle.android.i18n.write
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.ss.usermodel.Workbook
 import org.apache.poi.ss.usermodel.WorkbookFactory
 import org.gradle.api.Project
-import java.io.File
 import java.io.InputStream
-import java.nio.file.Path
-import java.nio.file.Paths
 
 /**
  * Android i18n resources importer from `.xls` and `.xlsx` sources.
@@ -27,7 +25,10 @@ class XlsImporter(private val project: Project) : AbstractImporter(project) {
             }
         }
 
-        val stringResourcesByPath = projectData.toStringResourcesByPath(project.projectDir, config)
+        val stringResourcesByPath = projectData.toStringResourcesByPath(
+            project.projectDir,
+            config.defaultLocale
+        )
         stringResourcesByPath.write()
     }
 }
@@ -137,89 +138,4 @@ private fun readWorkbookRows(config: ImportConfig, workbook: Workbook): List<Row
         }
     }
     return result
-}
-
-private fun ProjectData.toStringResourcesByPath(
-    baseDir: File,
-    config: ImportConfig
-): Map<Path, StringResources> {
-    val isMultiModule = this.modules.size > 1
-    return this.modules.map { moduleData ->
-        val moduleBaseDir = if (isMultiModule) File(baseDir, moduleData.pathRelativeToProj()).path else baseDir.path
-        val moduleResPath = Paths.get(moduleBaseDir, "src", "main", "res")
-        Pair(moduleResPath, moduleData)
-    }.flatMap { (resDirPath, moduleData) ->
-        moduleData.translations.map { translationData ->
-            val valuesPath =
-                if (translationData.locale == config.defaultLocale) "values"
-                else "values-${translationData.locale}"
-            val stringsFileName = if (isMultiModule) moduleData.stringsFileName() else "strings.xml"
-            val stringsFileSubPath = Paths.get(valuesPath, stringsFileName)
-            val stringsFileFullPath = resDirPath.resolve(stringsFileSubPath)
-            val stringResources = translationData.toStringResources(config)
-            Pair(stringsFileFullPath, stringResources)
-        }
-    }.associateBy({ it.first }) { it.second }
-}
-
-private fun ModuleData.stringsFileName(): String =
-    "${this.name
-        .replace("^[^.]*\\.".toRegex(), "")
-        .replace('-', '_')}_strings.xml"
-
-private fun ModuleData.pathRelativeToProj(): String =
-    this.name.split(".").joinToString(File.separator)
-
-private fun TranslationData.toStringResources(config: ImportConfig): StringResources {
-
-    val stringDataListByPlurality = this.stringDataList.groupBy {
-        it.name?.contains(QUANTITY_SEPARATOR) == true
-    }
-
-    val singularStringDataList = stringDataListByPlurality[false]
-    val pluralStringDataList = stringDataListByPlurality[true]
-
-    return StringResources(
-        locale,
-        locale == config.defaultLocale,
-        singularStringDataList
-            ?.sortedBy { (name, _) -> name }
-            ?.toSingularXmlResourceList()
-            ?.toMutableList()
-            ?: mutableListOf(),
-        pluralStringDataList
-            ?.sortedBy { (name, _) -> name }
-            ?.toPluralXmlResourcesList()
-            ?.toMutableList()
-            ?: mutableListOf()
-    )
-}
-
-private fun List<StringData>.toPluralXmlResourcesList(): List<XmlResources> {
-    val groupedByPluralKey = groupBy { stringData: StringData ->
-        assert(stringData.name?.contains(QUANTITY_SEPARATOR) == true)
-        stringData.name?.split(QUANTITY_SEPARATOR)!!.first()
-    }
-    return groupedByPluralKey.map { (pluralName, pluralStringDataList) ->
-        XmlResources(
-            pluralName,
-            pluralStringDataList.map { stringData ->
-                val quantity = stringData.name?.split(QUANTITY_SEPARATOR)?.get(1)
-                XmlResource(name = null, quantity = quantity, text = stringData.text)
-            }.toMutableList()
-        )
-    }
-}
-
-private fun List<StringData>.toSingularXmlResourceList(): List<XmlResource> =
-    map { stringData ->
-        XmlResource(name = stringData.name, text = stringData.text)
-    }.sortedBy { it.name }
-
-private fun Map<Path, StringResources>.write() {
-    forEach { (path, stringResources) ->
-        val outputResFile = path.toFile()
-        outputResFile.parentFile.mkdirs()
-        Configuration.xmlMapper.writeValue(outputResFile, stringResources)
-    }
 }

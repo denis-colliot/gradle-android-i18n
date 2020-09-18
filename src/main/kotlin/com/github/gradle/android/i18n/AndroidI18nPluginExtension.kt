@@ -51,6 +51,8 @@ open class AndroidI18nPluginExtension(
      */
     var importSheetNameRegex: String = "^.*$"
 
+    var deduplicateFrom: String? = null
+
     /**
      * Imports the i18n translation resources from the configured [sourceFile].
      *
@@ -140,6 +142,22 @@ open class AndroidI18nPluginExtension(
             .forEach {
                 jcifs.Config.setProperty(it.key.substringAfter('.'), it.value.toString().trim())
             }
+    }
+
+    fun deduplicateKeys() {
+        val deduplicateFromProp = deduplicateFrom ?: project.findProperty("androidI18n.deduplicateFrom")
+        val deduplicateFrom = deduplicateFromProp as? String
+        if (deduplicateFrom != null) {
+            println("Deduplicating keys from $deduplicateFrom...")
+            val projData = project.deserializeResources(defaultLocale).toProjectData()
+            val deduplicatedProjData = projData.deduplicated(deduplicateFromProp)
+            deduplicatedProjData
+                .toStringResourcesByPath(project.projectDir, defaultLocale)
+                .write()
+            println("Resources have been written to ${project.projectDir}")
+        } else {
+            println("Please supply a value for property `androidI18n.deduplicateFrom`")
+        }
     }
 
     companion object {

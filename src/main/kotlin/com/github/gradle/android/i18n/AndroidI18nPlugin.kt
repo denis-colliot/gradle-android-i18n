@@ -37,5 +37,14 @@ class AndroidI18nPlugin : Plugin<Project> {
                 }
             }
         }
+
+        project.tasks.let { task ->
+            task.create("androidI18nDeduplicate").apply {
+                doLast {
+                    println("Deduplicate android i18n keys from main module")
+                    extension.deduplicateKeys()
+                }
+            }
+        }
     }
 }
