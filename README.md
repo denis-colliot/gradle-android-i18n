@@ -36,7 +36,14 @@ The plugin provides the following gradle tasks:
       \_key2: value2
     ```
     
-    Calling `androidI18nDeduplicate -PandroidI18n.deduplicateFrom=app` will make it:
+    Here is how you call the task:
+
+    ```bash
+    ./gradlew androidI18nDeduplicate -PandroidI18n.deduplicateFrom=app
+    ```
+
+    The task transforms the project to:
+
     ```
     project
     \_app
